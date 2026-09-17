@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "duration_seconds": 3600,
+  "normalization_enabled": true,
+  "loudness_target": -14.0,
+  "transition_mode": "Crossfade",
+  "transition_seconds": 3.0,
+  "visual_motion": "Pan Left-Right",
+  "overlay_path": "",
+  "overlay_mode": "Screen",
+  "overlay_opacity": 0.25,
+  "encoder": "NVIDIA NVENC",
+  "random_seed": 614283
+}

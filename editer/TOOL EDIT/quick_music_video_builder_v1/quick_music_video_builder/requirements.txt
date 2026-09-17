@@ -1,0 +1,4 @@
+# App runtime: chỉ dùng Python standard library (Tkinter + subprocess).
+# Chỉ cần package này khi build .exe:
+pyinstaller>=6.22
+pyinstaller-hooks-contrib

@@ -1,0 +1,30 @@
+# Credentials and local sessions
+**/api_key.txt
+**/cookies.txt
+**/*auth*.json
+**/quota_usage.json
+
+# Generated Python files
+**/__pycache__/
+*.py[cod]
+
+# Media and downloaded source assets (store separately from Git)
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# Local binaries, packaged releases, and build output
+*.exe
+*.zip
+**/build/
+**/dist/
+**/release/
+
+# Generated research exports
+**/exports/

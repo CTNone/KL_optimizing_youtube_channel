@@ -1,0 +1,7 @@
+FREE / NO API KEY
+Keyword example: christmas jazz
+Exact title phrase: christmas jazz
+Years: 2025,2024
+Minimum views: 1000000
+Max videos: 30
+Listening preset: 10 / 20 / 30 / 0
