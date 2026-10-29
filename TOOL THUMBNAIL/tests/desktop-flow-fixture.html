@@ -1,0 +1,33 @@
+<!doctype html><meta charset="utf-8"><title>Local Flow controller test</title>
+<style>textarea{position:absolute;left:300px;top:650px;width:650px;height:50px}.model{position:absolute;left:600px;top:710px}.count{position:absolute;left:830px;top:710px}#send{position:absolute;left:910px;top:710px;width:40px;height:40px}#result{position:absolute;left:300px;top:100px;width:400px;height:300px}#dialog{position:absolute;inset:0;background:white;z-index:20}#dialog img{position:absolute;left:200px;top:80px;width:700px;height:525px}#dialog button{position:absolute;left:950px;top:100px}#dialog .two{top:150px}</style>
+<textarea oninput="document.querySelector('#send').disabled=!this.value"></textarea>
+<div id="ratios" style="position:absolute;left:300px;top:600px"><button aria-checked="false">16:9</button><button aria-checked="true">4:3</button><button aria-checked="false">1:1</button><button aria-checked="false">3:4</button><button aria-checked="false">9:16</button></div>
+<button class="model" role="combobox">Nano Banana 2 Lite</button><button class="count">x1</button><button id="send" disabled onclick="generate()">send</button>
+<script>
+window.sendCount=0;
+document.querySelectorAll('#ratios button').forEach(button=>button.onclick=()=>{document.querySelectorAll('#ratios button').forEach(e=>e.setAttribute('aria-checked',String(e===button)));});
+function generate(){
+  if(!location.search.includes('noSubmit')){document.querySelector('textarea').value='';document.querySelector('#send').disabled=true;}
+  window.sendCount++;
+  const canvas=document.createElement('canvas');canvas.width=2048;canvas.height=1536;
+  const ctx=canvas.getContext('2d');ctx.fillStyle='#4477aa';ctx.fillRect(0,0,2048,1536);
+  window.imageData=canvas.toDataURL('image/jpeg',.95);
+  const image=document.createElement('img');image.id='result';image.src=window.imageData;image.onclick=openImage;document.body.append(image);
+  if(location.search.includes('replacePreview')){
+    ctx.fillStyle='#336699';ctx.fillRect(0,0,2048,1536);image.src=canvas.toDataURL('image/jpeg',.95);
+    setTimeout(()=>{image.src=window.imageData},5000);
+    const duplicate=image.cloneNode();duplicate.id='duplicate';duplicate.style.cssText='position:absolute;left:720px;top:100px;width:300px;height:225px';duplicate.onclick=openImage;document.body.append(duplicate);
+    setTimeout(()=>{duplicate.src=window.imageData},5000);
+  }
+}
+function openImage(){
+  const dialog=document.createElement('div');dialog.id='dialog';dialog.setAttribute('role','dialog');
+  const image=document.createElement('img');image.src=window.imageData;dialog.append(image);
+  const download=document.createElement('button');download.textContent='Download';download.onclick=()=>{
+    const two=document.createElement('button');two.className='two';two.setAttribute('role','menuitem');two.textContent='2K';two.onclick=()=>{
+      const anchor=document.createElement('a');anchor.href=window.imageData;anchor.download='fixture.jpg';document.body.append(anchor);anchor.click();anchor.remove();
+    };dialog.append(two);
+  };dialog.append(download);document.body.append(dialog);
+}
+window.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelector('#dialog')?.remove();});
+</script>

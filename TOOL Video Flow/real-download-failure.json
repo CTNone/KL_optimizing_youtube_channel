@@ -1,0 +1,226 @@
+{
+  "url": "https://flow.google.com/project/8afcba24-0f58-46c4-84ff-99cb59e7eb94",
+  "buttons": [
+    {
+      "text": "home",
+      "aria": "Trang chủ"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Các lựa chọn khác cho dự án"
+    },
+    {
+      "text": "search",
+      "aria": "Tìm kiếm"
+    },
+    {
+      "text": "filter_list",
+      "aria": "Các lựa chọn lọc và sắp xếp"
+    },
+    {
+      "text": "add",
+      "aria": "Trình đơn thêm nội dung nghe nhìn"
+    },
+    {
+      "text": "help",
+      "aria": "Trợ giúp về sản phẩm"
+    },
+    {
+      "text": "settings_2",
+      "aria": "Cài đặt lưới ô"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Lựa chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích"
+    },
+    {
+      "text": "redo",
+      "aria": "Sử dụng lại câu lệnh"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Tuỳ chọn khác"
+    },
+    {
+      "text": "add",
+      "aria": "Thêm thành phần vào ô nhập câu lệnh"
+    },
+    {
+      "text": "Tác nhân",
+      "aria": null
+    },
+    {
+      "text": " Video · 720p · 8 giây crop_16_9 x1 ",
+      "aria": "Điều kiện kích hoạt cài đặt"
+    },
+    {
+      "text": "arrow_forward",
+      "aria": "Bắt đầu tạo"
+    }
+  ],
+  "menus": []
+}

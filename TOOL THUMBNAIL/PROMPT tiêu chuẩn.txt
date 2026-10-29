@@ -1,0 +1,6 @@
+Create an image with a 4:3 aspect ratio.
+```
+TEXT of IMAGE.
+```
+
+The bottom 25% of the image is free of text, featuring a simple design that harmonizes perfectly with the overall composition.

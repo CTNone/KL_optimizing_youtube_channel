@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+browser-profile/
+output/
+settings.json
+chrome-extension/native-host/launch.cmd
+chrome-extension/native-host/com.flowtxt.files.json
+desktop-data/
+desktop-settings.json
+chrome-extension/native-host/reference-cache/
+chrome-extension/native-host/nctt-job.json
+chrome-extension/native-host/nctt-job.tmp

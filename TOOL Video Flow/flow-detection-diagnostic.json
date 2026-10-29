@@ -1,0 +1,56 @@
+{
+  "detected": [],
+  "ancestors": [
+    [
+      {
+        "tag": "VIDEO",
+        "cls": "",
+        "videoCount": 0,
+        "progress": 0,
+        "text": ""
+      },
+      {
+        "tag": "DIV",
+        "cls": "container",
+        "videoCount": 1,
+        "progress": 0,
+        "text": "play_circlefavoriteredomore_vertplay_circletuyết rơi."
+      },
+      {
+        "tag": "FLOW-VIDEO-TILE",
+        "cls": "",
+        "videoCount": 1,
+        "progress": 0,
+        "text": "play_circlefavoriteredomore_vertplay_circletuyết rơi."
+      },
+      {
+        "tag": "DIV",
+        "cls": "container",
+        "videoCount": 1,
+        "progress": 0,
+        "text": "play_circlefavoriteredomore_vertplay_circletuyết rơi."
+      },
+      {
+        "tag": "FLOW-TILE-CONTAINER",
+        "cls": "",
+        "videoCount": 1,
+        "progress": 0,
+        "text": "play_circlefavoriteredomore_vertplay_circletuyết rơi."
+      },
+      {
+        "tag": "FLOW-GRID-TILE-CONTAINER",
+        "cls": "mat-context-menu-trigger",
+        "videoCount": 1,
+        "progress": 0,
+        "text": "play_circlefavoriteredomore_vertplay_circletuyết rơi."
+      },
+      {
+        "tag": "DIV",
+        "cls": "tile-row virtual-item-container",
+        "videoCount": 1,
+        "progress": 0,
+        "text": "play_circlefavoriteredomore_vertplay_circletuyết rơi.favoritemore_vertimageinput.jpg"
+      }
+    ]
+  ]
+}

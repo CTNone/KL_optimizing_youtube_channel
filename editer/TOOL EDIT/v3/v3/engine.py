@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 import threading
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -39,10 +39,21 @@ class RenderSettings:
     encoder: str = "CPU (libx264)"
     output_profile: str = "1440p — Chất lượng cao"
     random_seed: int = 123456
+    visual_source: str = "Thumbnail"
+    flow_clips: list[str] = field(default_factory=list)
+    flow_crossfade: float = 0.8
+    flow_trim_start: float = 0.0
+    flow_trim_end: float = 0.0
+    flow_music_enabled: bool = True
+    flow_style: str = "Winter / Snow"
+    flow_intensity: str = "Subtle"
+    flow_instruction: str = ""
+    channel_profile: str = "HEARTHLUNE"
+    filter_channel_music: bool = False
 
     def to_json_dict(self) -> dict:
         data = asdict(self)
-        data["schema_version"] = 3
+        data["schema_version"] = 4
         return data
 
     @classmethod
@@ -60,6 +71,17 @@ class RenderSettings:
             encoder=str(data.get("encoder", "CPU (libx264)")),
             output_profile=str(data.get("output_profile", "1440p — Chất lượng cao")),
             random_seed=int(data.get("random_seed", 123456)),
+            visual_source=str(data.get("visual_source", "Thumbnail")),
+            flow_clips=list(data.get("flow_clips", [])),
+            flow_crossfade=float(data.get("flow_crossfade", 0.8)),
+            flow_trim_start=float(data.get("flow_trim_start", 0)),
+            flow_trim_end=float(data.get("flow_trim_end", 0)),
+            flow_music_enabled=bool(data.get("flow_music_enabled", True)),
+            flow_style=str(data.get("flow_style", "Winter / Snow")),
+            flow_intensity=str(data.get("flow_intensity", "Subtle")),
+            flow_instruction=str(data.get("flow_instruction", "")),
+            channel_profile=str(data.get("channel_profile", "HEARTHLUNE")),
+            filter_channel_music=bool(data.get("filter_channel_music", False)),
         )
 
 
@@ -432,6 +454,10 @@ class RenderEngine:
 
         rc = self.current_process.wait()
         err_thread.join(timeout=1.0)
+        if self.current_process.stdout:
+            self.current_process.stdout.close()
+        if self.current_process.stderr:
+            self.current_process.stderr.close()
         self.current_process = None
         self._check_cancel()
 
@@ -461,6 +487,9 @@ class RenderEngine:
                     f"loudnorm=I={target}:LRA=11:TP=-1.5"
                 )
             filters.append("aresample=48000")
+            # loudnorm can emit oversized frames in newer FFmpeg builds.
+            # FLAC block sizes must remain <= 65535 samples.
+            filters.append("asetnsamples=n=4608:p=0")
 
             if (
                 settings.transition_mode.lower() == "fade"

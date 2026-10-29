@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flow TXT — Một file, một prompt</title><link rel="stylesheet" href="panel.css"></head>
+<body><main>
+<header><div><p class="eyebrow">FLOW TXT <span>0.10.0</span></p><h1>Một file. Một lần tạo.</h1><p>Mở file TXT, chọn mô hình, số ảnh và thư mục lưu ảnh 2K.</p></div><span id="connection" class="badge">Đang kết nối…</span></header>
+<div class="layout"><section class="card controls" aria-label="Thiết lập tạo ảnh">
+<h2>Chuẩn bị</h2><label for="file">1. Chọn file prompt</label><input id="file" type="file" accept=".txt,text/plain">
+<button id="ncttImport" class="secondary">Nhận prompt + ảnh từ NCTT</button><label>Hoặc chọn ảnh tham chiếu trên máy<input id="referenceFile" type="file" accept="image/png,image/jpeg,image/webp"></label><p id="referenceLabel" class="hint">Không dùng ảnh mẫu.</p><img id="referencePreview" hidden alt="Ảnh tham chiếu NCTT" style="max-width:100%;max-height:180px;object-fit:contain"><button id="referenceClear" class="secondary">Bỏ ảnh mẫu</button>
+<p class="hint">Toàn bộ file là <strong>một prompt</strong>. Giữ nguyên xuống dòng và dòng “---”, không tách thành danh sách.</p>
+<label for="promptEditor">Nội dung prompt — có thể sửa trực tiếp</label><textarea id="promptEditor" rows="8" placeholder="Mở file TXT để chỉnh nội dung ở đây…" spellcheck="false"></textarea><p id="editStatus" class="hint">File gốc không bị thay đổi. Tool gửi nội dung trong ô này.</p>
+<label>2. Nơi lưu ảnh</label><button id="folder" class="secondary">Chọn thư mục…</button><div class="destination"><strong id="folderName">Chưa chọn thư mục.</strong><p id="folderDetail" class="hint">Bạn có thể chọn thư mục ở ổ đĩa khác, USB hoặc OneDrive nếu Chrome cho phép ghi. Không giới hạn ở Downloads.</p></div>
+<label for="count">3. Số ảnh</label><select id="count"><option value="1">1 ảnh — x1 trên Flow</option><option value="2">2 ảnh — x2 trên Flow</option><option value="3">3 ảnh — x3 trên Flow</option><option value="4">4 ảnh — x4 trên Flow</option></select>
+<p id="flowCount" class="hint">Tool sẽ đặt đúng số ảnh trên Flow và xác nhận trước khi gửi.</p>
+<label for="aspectRatio">Tỉ lệ ảnh trên Google Flow</label><select id="aspectRatio"><option>16:9</option><option selected>4:3</option><option>1:1</option><option>3:4</option><option>9:16</option></select>
+<label for="modelChoice">Mô hình dùng cho lượt đầu</label><select id="modelChoice"><option value="">Theo thứ tự ưu tiên</option><option>Nano Banana Pro</option><option>Nano Banana 2.1</option><option>Nano Banana 2 Lite</option></select>
+<p id="currentModel" class="hint">Mô hình hiện tại: đang nhận diện…</p>
+<p id="plannedModel"><strong>Mô hình sẽ dùng: đang kiểm tra…</strong></p>
+<div class="destination"><strong>Ưu tiên khi mô hình hết lượt</strong><ol id="priority"></ol><p id="nextModel" class="hint"></p></div>
+<p class="hint">Tool xác nhận mô hình trước khi gửi. Chỉ khóa mô hình sau 3 lượt có thông báo hạn mức rõ ràng; lỗi lưu, lỗi giao diện hoặc lỗi chính sách không chứng minh mô hình hết lượt.</p>
+<p class="hint">Giữ đúng một tab Flow. Lượt đầu lỗi: F5 tab đó một lần rồi thử lần cuối. Ảnh đã lưu một phần được giữ. Không vượt chặn đăng nhập, CAPTCHA hoặc credit; các chặn còn tồn tại sau F5 vẫn được báo lỗi.</p>
+<div class="actions"><button id="run" class="primary" disabled>Tạo ảnh</button><button id="stop" class="secondary" disabled>Dừng</button></div><p id="notice" role="status" class="notice"></p>
+<details class="advanced"><summary>Cài đặt nâng cao & xử lý lỗi</summary>
+<label>Lưu ảnh<select id="saveMode"><option value="windows">Thư mục Windows — đường dẫn đầy đủ</option><option value="folder">Chọn qua Chrome — chỉ hiện tên thư mục</option><option value="downloads">Chrome Downloads</option></select></label>
+<details><summary>Cài bộ lưu thư mục Windows</summary><p class="hint">Cài một lần để chọn thư mục bằng Windows và hiển thị cả ổ đĩa. ID extension: <code id="extensionId"></code>. Mở PowerShell tại thư mục chrome-extension và chạy:</p><pre id="installCommand"></pre><p class="hint">Bộ hỗ trợ chỉ ghi ảnh vào thư mục đã chọn. Nếu chưa cài, bạn vẫn có thể chọn chế độ Chrome hoặc Downloads.</p></details>
+<label>Cách gửi<select id="clickMode"><option value="native">Chuột Chrome</option><option value="dom">DOM (cách cũ)</option></select></label>
+<p class="hint">Chuột Chrome dùng quyền debugger, đưa tab Flow lên trước rồi ngắt kết nối sau khi bấm. Đóng DevTools khi chạy.</p>
+<label>Chờ ảnh tối đa (giây)<input id="timeout" type="number" min="10" value="240"></label>
+<label>Thứ tự mô hình từ cao xuống thấp<textarea id="modelOrder" rows="3">Nano Banana Pro
+Nano Banana 2.1
+Nano Banana 2 Lite</textarea></label>
+<div class="actions"><button id="auto">Tự nhận diện</button><button id="check">Đọc mô hình trên Flow</button><button id="pick">Chọn nút gửi trên Flow</button></div>
+<label>Ô prompt<input id="prompt" placeholder="Tự nhận diện"></label><label>Nút gửi<input id="generate" placeholder="Tự nhận diện"></label><label>Thẻ ảnh<input id="card" placeholder="Tự nhận diện"></label><label>Ảnh trong thẻ<input id="image" value="img"></label><label>Link ảnh gốc<input id="original" placeholder="Không bắt buộc"></label>
+<label>Nút số ảnh trên Flow<input id="countControl" placeholder="Tự nhận diện x1–x4"></label><label>Lựa chọn số ảnh<input id="countOption" placeholder="CSS selector; {count} được thay bằng số ảnh"></label><label>Nút Download của ảnh<input id="downloadButton" placeholder="Tự nhận diện"></label><label>Lựa chọn tải 2K<input id="download2k" placeholder="Tự nhận diện nhãn 2K"></label>
+<p class="hint">Mở ảnh, chọn Download → 2K. Tool kiểm tra cạnh dài tối thiểu 2048 px, không thay bằng ảnh xem trước. Không chọn mục có phí/nâng cấp. Flow có thể lưu một bản vào Downloads trước khi tool ghi bản đã xác minh vào thư mục đã chọn. Giữ bảng điều khiển mở khi chạy.</p>
+</details></section><section class="outputs" aria-label="Kết quả">
+<article class="card"><p class="eyebrow">TRẠNG THÁI TOOL</p><h2 id="phase" aria-live="polite">Sẵn sàng</h2><p id="summary">Chọn một file TXT để bắt đầu.</p><p id="runFile" class="hint"></p></article>
+<article class="card flow"><p class="eyebrow">THÔNG BÁO TỪ GOOGLE FLOW</p><p id="flowMessage">Chưa ghi nhận thông báo lỗi từ Flow.</p><p class="hint">Chỉ hiển thị thông báo đọc được trên trang. Việc tool bấm gửi không đồng nghĩa Flow đã nhận yêu cầu.</p></article>
+<article class="card"><div class="section-head"><h2>Ảnh đã lưu</h2><span id="savedCount" class="badge">0 ảnh</span></div><p id="emptyFiles" class="hint">Chưa có file được xác nhận lưu thành công.</p><ul id="files"></ul></article>
+<details class="card"><summary>Nhật ký kỹ thuật của tool</summary><pre id="status">Chưa chạy.</pre><button id="export">Xuất nhật ký JSON</button></details>
+<article class="card"><h2>Lịch sử gần đây</h2><p class="hint">Giữ tối đa 100 lượt trong tiện ích, gồm prompt, mô hình, nguyên nhân và file đã lưu.</p><div id="history">Chưa có lịch sử.</div></article>
+<article class="card"><h2>Hạn mức mô hình</h2><p class="hint">Chỉ liệt kê mô hình có ít nhất 3 lần Flow báo hạn mức sau khi gửi. Lỗi tạo chung không đủ để kết luận hết lượt.</p><div id="modelLimits">Chưa có mô hình đủ bằng chứng hết lượt.</div><p id="modelEvidence" class="hint"></p></article>
+</section></div><footer>Mỗi file là một lượt độc lập. Tối đa một lần thử lại; không tự chạy file khác. Timeout có thể xảy ra khi Flow vẫn xử lý, nên lần thử lại có thể tạo thêm ảnh và tốn thêm lượt.</footer>
+</main><script src="folder-writer.js"></script><script src="native-files.js"></script><script src="panel.js"></script></body></html>
+
+
+
+
+
+
+
+

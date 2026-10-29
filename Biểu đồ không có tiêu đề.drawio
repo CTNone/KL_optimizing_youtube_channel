@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Trang-1" id="t38Xk-eZGextfLNozkIV">
-    <mxGraphModel dx="2020" dy="1061" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1717" dy="2329" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -11,10 +11,10 @@
         </UserObject>
         <UserObject label="HỆ THỐNG QUẢN TRỊ QUY TRÌNH&#xa;SẢN XUẤT NỘI DUNG YOUTUBE" plantUmlId="rect_0" plantUmlBaseStyle="swimlane;collapsible=0;startSize=26;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;whiteSpace=wrap;" plantUmlBaseValue="HỆ THỐNG QUẢN TRỊ QUY TRÌNH&#xa;SẢN XUẤT NỘI DUNG YOUTUBE" id="Oj3g36QgVSpd87i6ZYOe-2">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="swimlane;collapsible=0;startSize=26;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;whiteSpace=wrap;" vertex="1">
-            <mxGeometry height="144" width="180" x="78.5" y="1322.67" as="geometry" />
+            <mxGeometry height="2370" width="1590" x="40" y="-20" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="M0. Quản trị hệ thống" plantUmlId="rect_1" plantUmlBaseStyle="shape=folder;tabWidth=201;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M0. Quản trị hệ thống" id="Oj3g36QgVSpd87i6ZYOe-3">
+        <UserObject label="M 0. Quản trị hệ thống" plantUmlId="rect_1" plantUmlBaseStyle="shape=folder;tabWidth=201;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M0. Quản trị hệ thống" id="Oj3g36QgVSpd87i6ZYOe-3">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=201;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="293" width="275" x="524" y="30" as="geometry" />
           </mxCell>
@@ -34,7 +34,7 @@
             <mxGeometry height="76" width="190" x="42" y="43" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="M1. Hỗ trợ hoạt động kênh" plantUmlId="rect_5" plantUmlBaseStyle="shape=folder;tabWidth=213;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M1. Hỗ trợ hoạt động kênh" id="Oj3g36QgVSpd87i6ZYOe-7">
+        <UserObject label="M 1. Hỗ trợ hoạt động kênh" plantUmlId="rect_5" plantUmlBaseStyle="shape=folder;tabWidth=213;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M1. Hỗ trợ hoạt động kênh" id="Oj3g36QgVSpd87i6ZYOe-7">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=213;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="447" width="193" x="524" y="1340.33" as="geometry" />
           </mxCell>
@@ -59,7 +59,7 @@
             <mxGeometry height="76" width="163" x="10" y="361" as="geometry" />
           </mxCell>
         </UserObject>
-        <UserObject label="M2. Nghiên cứu thị trường" plantUmlId="rect_10" plantUmlBaseStyle="shape=folder;tabWidth=234;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M2. Nghiên cứu thị trường" id="Oj3g36QgVSpd87i6ZYOe-12">
+        <UserObject label="M 2. Nghiên cứu thị trường" plantUmlId="rect_10" plantUmlBaseStyle="shape=folder;tabWidth=234;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M2. Nghiên cứu thị trường" id="Oj3g36QgVSpd87i6ZYOe-12">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=234;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="186.67" width="1095" x="524" y="1123.67" as="geometry" />
           </mxCell>
@@ -115,7 +115,7 @@
             </mxGeometry>
           </mxCell>
         </UserObject>
-        <UserObject label="M3. Thumbnail AI" plantUmlId="rect_15" plantUmlBaseStyle="shape=folder;tabWidth=166;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M3. Thumbnail AI" id="Oj3g36QgVSpd87i6ZYOe-17">
+        <UserObject label="M 3. Thumbnail AI" plantUmlId="rect_15" plantUmlBaseStyle="shape=folder;tabWidth=166;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M3. Thumbnail AI" id="Oj3g36QgVSpd87i6ZYOe-17">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=166;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="213" width="1052" x="524" y="1817.33" as="geometry" />
           </mxCell>
@@ -175,7 +175,7 @@
             </mxGeometry>
           </mxCell>
         </UserObject>
-        <UserObject label="M4. Video QC" plantUmlId="rect_21" plantUmlBaseStyle="shape=folder;tabWidth=134;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M4. Video QC" id="Oj3g36QgVSpd87i6ZYOe-23">
+        <UserObject label="M 4. Video QC" plantUmlId="rect_21" plantUmlBaseStyle="shape=folder;tabWidth=134;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M4. Video QC" id="Oj3g36QgVSpd87i6ZYOe-23">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=134;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="247.67" width="719" x="524" y="353" as="geometry" />
           </mxCell>
@@ -222,7 +222,7 @@
             </mxGeometry>
           </mxCell>
         </UserObject>
-        <UserObject label="M5. SEO" plantUmlId="rect_26" plantUmlBaseStyle="shape=folder;tabWidth=94;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M5. SEO" id="Oj3g36QgVSpd87i6ZYOe-28">
+        <UserObject label="M 5. SEO" plantUmlId="rect_26" plantUmlBaseStyle="shape=folder;tabWidth=94;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M5. SEO" id="Oj3g36QgVSpd87i6ZYOe-28">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=94;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="211" width="829" x="524" y="882.67" as="geometry" />
           </mxCell>
@@ -280,7 +280,7 @@
             </mxGeometry>
           </mxCell>
         </UserObject>
-        <UserObject label="M6. Publishing" plantUmlId="rect_31" plantUmlBaseStyle="shape=folder;tabWidth=141;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M6. Publishing" id="Oj3g36QgVSpd87i6ZYOe-33">
+        <UserObject label="M 6. Publishing" plantUmlId="rect_31" plantUmlBaseStyle="shape=folder;tabWidth=141;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M6. Publishing" id="Oj3g36QgVSpd87i6ZYOe-33">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=141;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="222" width="482" x="524" y="630.67" as="geometry" />
           </mxCell>
@@ -310,7 +310,7 @@
             </mxGeometry>
           </mxCell>
         </UserObject>
-        <UserObject label="M7. Analytics &amp;amp; Planning" plantUmlId="rect_35" plantUmlBaseStyle="shape=folder;tabWidth=222;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M7. Analytics &amp;amp; Planning" id="Oj3g36QgVSpd87i6ZYOe-37">
+        <UserObject label="M 7. Analytics &amp;amp; Planning" plantUmlId="rect_35" plantUmlBaseStyle="shape=folder;tabWidth=222;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" plantUmlBaseValue="M7. Analytics &amp;amp; Planning" id="Oj3g36QgVSpd87i6ZYOe-37">
           <mxCell parent="Oj3g36QgVSpd87i6ZYOe-1" style="shape=folder;tabWidth=222;tabHeight=22;tabPosition=left;html=1;fillColor=none;strokeColor=#181818;fontColor=#000000;fontSize=13;fontStyle=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=1;container=1;collapsible=0;" vertex="1">
             <mxGeometry height="222" width="1100" x="524" y="2060.33" as="geometry" />
           </mxCell>

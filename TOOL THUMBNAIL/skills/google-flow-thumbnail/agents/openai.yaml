@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Flow Thumbnail"
+  short_description: "Bảo trì luồng tạo thumbnail Flow trên Desktop"
+  default_prompt: "Dùng $google-flow-thumbnail để đọc mã hiện tại và xử lý lỗi tạo thumbnail Google Flow trong dự án của tôi."

@@ -1,0 +1,38 @@
+const assert=require('node:assert/strict');
+require('./flow-errors.js');
+for(const text of ['Not enough credits','You have run out of AI credits','Không đủ tín dụng','Bạn đã hết credit'])assert.equal(FlowErrors.classify(text),'credit',text);
+for(const text of ['This prompt violates our policies','Nội dung vi phạm chính sách của Google','This generation was blocked'])assert.equal(FlowErrors.classify(text),'policy',text);
+assert.equal(FlowErrors.classify('Too many requests'),'rate_limit');
+assert.equal(FlowErrors.classify('This model has reached its usage limit'),'model_limit');
+assert.equal(FlowErrors.classify('Mô hình đã đạt hạn mức sử dụng'),'model_limit');
+assert.equal(FlowErrors.classify('Generation failed'),'generation');
+for(const text of ['Quá trình tạo sẽ tốn 0 tín dụng','100 credits remaining','Privacy policy','Ảnh đã được tạo'])assert.equal(FlowErrors.classify(text),null,text);
+let mutation,disconnected=false;
+const node=text=>({innerText:text,querySelectorAll:()=>[],closest:()=>null});
+let alerts=[];
+global.document={body:{querySelectorAll:()=>alerts}};
+global.MutationObserver=class{constructor(fn){mutation=fn;}observe(){}disconnect(){disconnected=true;}};
+const monitor=FlowErrors.watch({visible:()=>true,prompt:'my prompt'});
+monitor.check();
+mutation([{type:'childList',addedNodes:[node('Không đủ tín dụng để tạo ảnh')]}]);
+assert.throws(()=>monitor.check(),e=>e.code==='blocked_credit');
+monitor.disconnect();assert.ok(disconnected);
+alerts=[node('my prompt violates our policies')];
+const excluded=FlowErrors.watch({visible:()=>true,prompt:'my prompt violates our policies'});excluded.check();excluded.disconnect();
+console.log('PASS: English/Vietnamese errors recognized; zero cost not mistaken for exhausted credits; new notices latched; prompt text excluded.');
+const oldPolicy=node('This prompt violates our policies');alerts=[oldPolicy];
+const fresh=FlowErrors.watch({visible:()=>true});fresh.check();
+mutation([{type:'characterData',target:{parentElement:oldPolicy}}]);fresh.check();
+const newPolicy=node('This prompt violates our policies');
+mutation([{type:'childList',addedNodes:[newPolicy]}]);
+assert.throws(()=>fresh.check(),e=>e.code==='blocked_policy');fresh.disconnect();
+alerts=[node('Not enough credits')];
+assert.throws(()=>FlowErrors.watch({visible:()=>true}).check(),e=>e.code==='blocked_credit');
+console.log('PASS: old unchanged policy notice ignored on fresh run; newly appearing same notice detected; existing account credit block retained.');
+for(const message of ['This model has reached its usage limit','Too many requests']) {
+ const old=node(message);alerts=[old];const watch=FlowErrors.watch({visible:()=>true});watch.check();
+ mutation([{type:'childList',addedNodes:[node(message)]}]);assert.throws(()=>watch.check());watch.disconnect();
+}
+alerts=[node('Not enough credits')];
+assert.throws(()=>FlowErrors.watch({visible:()=>true,ignoreExisting:true}).check(),e=>e.code==='blocked_credit');
+console.log('PASS: stale model/rate notices do not fail first attempt; new identical notices count; credit block is retained after reload.');

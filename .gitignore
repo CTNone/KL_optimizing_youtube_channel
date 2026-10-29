@@ -7,6 +7,8 @@
 # Generated Python files
 **/__pycache__/
 *.py[cod]
+**/.venv/
+**/venv/
 
 # Media and downloaded source assets (store separately from Git)
 *.mp3
@@ -18,6 +20,23 @@
 *.avi
 *.mkv
 *.webm
+*.m4v
+*.mpeg
+*.mpg
+*.flv
+*.3gp
+
+# Local databases, logs, and generated workspace data
+*.sqlite
+*.sqlite3
+*.db
+*.log
+TOOL Video Flow OUTPUT/
+editer/TOOL EDIT/v3/v3/demo_flow/
+TOOL THUMBNAIL/Thử nghiệm trước đó - failed/
+editer/Nhạc jazz/CapCut_Exports/
+editer/Nhạc jazz/library_audit.json
+editer/Nhạc jazz/library_completion_report.csv
 
 # Local binaries, packaged releases, and build output
 *.exe

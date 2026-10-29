@@ -1,4 +1,0 @@
-# Runtime app chỉ dùng Python standard library.
-# Cần khi đóng gói:
-pyinstaller>=6.22
-pyinstaller-hooks-contrib

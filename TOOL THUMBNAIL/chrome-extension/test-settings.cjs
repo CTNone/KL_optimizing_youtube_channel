@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const vm=require('node:vm');const fs=require('node:fs');
+let count=1,open=false,locked=false,verifyFailure=false;
+const base={getClientRects:()=>[1],getAttribute:()=>null,getBoundingClientRect:()=>({left:100,right:150,top:140,bottom:170})};
+const editor={getBoundingClientRect:()=>({left:50,right:400,top:100,bottom:130})};
+const trigger={...base,get textContent(){return 'x'+count;}};
+const options=[1,2,3,4].map(n=>({...base,textContent:String(n),get disabled(){return locked && n===4;},n}));
+const document={querySelectorAll:css=>css==='button,[role="button"],[role="combobox"]'?[trigger]:css.includes('[role="option"]')&&open?options:[]};
+const context=vm.createContext({document,getComputedStyle:()=>({visibility:'visible'})});
+vm.runInContext(fs.readFileSync(__dirname+'/flow-settings.js','utf8'),context);
+const settings=context.FlowSettings;
+let clicks=0;
+const args={editor:()=>editor,cfg:{count:'4'},click:async e=>{clicks++;if(e===trigger)open=true;else if(!verifyFailure){count=e.n;open=false;}},sleep:async()=>{},check(){}};
+(async()=>{
+ assert.equal(await settings.apply(args),4);assert.equal(count,4);assert.equal(clicks,2);
+ clicks=0;assert.equal(await settings.apply(args),4);assert.equal(clicks,0);
+ count=1;locked=true;await assert.rejects(settings.apply(args),/x4/);assert.equal(count,1);
+ locked=false;verifyFailure=true;open=false;await assert.rejects(settings.apply(args),/chưa xác nhận/);
+ console.log('PASS: Flow x1 changes to tool x4 and is verified; same count avoids clicks; disabled/unconfirmed options stop before sending.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

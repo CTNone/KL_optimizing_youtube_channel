@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');const vm=require('node:vm');const fs=require('node:fs');
+const data={};let injections=0,resumes=0,multiple=false,url='https://flow.google.com/project/one';
+const chrome={runtime:{onMessage:{addListener(){}}},tabs:{query:async()=>multiple?[{id:1,url},{id:2,url}]:[{id:1,url}],sendMessage:async(id,msg)=>{assert.equal(msg.type,'resumeRun');assert.ok([1,2].includes(msg.checkpoint.nextAttempt));resumes++;return {ok:true};},onUpdated:{addListener(){}}},scripting:{executeScript:async()=>{injections++;}},storage:{session:{get:async()=>structuredClone(data),set:async values=>Object.assign(data,structuredClone(values))}}};
+const ctx=vm.createContext({chrome,URL,console,setTimeout:(fn,ms)=>{assert.equal(ms,2000);queueMicrotask(fn);}});vm.runInContext(fs.readFileSync(__dirname+'/background.js','utf8'),ctx);
+(async()=>{
+ const sender={tab:{id:1},frameId:0};const cp={id:'run-one',nextAttempt:2,args:{prompt:'same text'},attempts:[{attempt:1,status:'failed'}]};
+ assert.equal(await ctx.prepareRecovery(sender,cp),1);
+ await assert.rejects(ctx.prepareRecovery(sender,cp),/một lần F5/);
+ await Promise.all([ctx.resumeAfterReload(1),ctx.resumeAfterReload(1)]);assert.equal(resumes,1);assert.equal(injections,1);assert.equal(data.recovery_1.phase,'resumed');
+ await ctx.resumeAfterReload(1);assert.equal(resumes,1);
+ multiple=true;await assert.rejects(ctx.prepareRecovery(sender,{...cp,id:'two'}),/2 tab Flow/);multiple=false;
+ await ctx.prepareRecovery(sender,{...cp,id:'three'});url='https://flow.google.com/project/other';await ctx.resumeAfterReload(1);assert.equal(resumes,1);assert.equal(data.recovery_1.phase,'failed');
+ console.log('PASS: one recovery per run; resume exactly once; multiple tabs and changed project refused.');
+ const start={...cp,id:'fresh',nextAttempt:1,initialReload:true,args:{cfg:{modelChoice:'Nano Banana Lite',count:'2'},prompt:'unchanged'}};
+ await ctx.prepareRecovery(sender,start);await ctx.resumeAfterReload(1);assert.equal(data.recovery_1.attempt,1);
+ await assert.rejects(ctx.prepareRecovery(sender,start),/một lần F5/);
+ await ctx.prepareRecovery(sender,{...start,nextAttempt:2});await ctx.resumeAfterReload(1);assert.equal(data.recovery_1.attempt,2);
+ await assert.rejects(ctx.prepareRecovery(sender,{...start,nextAttempt:2}),/một lần F5/);
+ console.log('PASS: initial reload retains model/count/prompt and remains attempt 1; only one additional reload for attempt 2 is allowed.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

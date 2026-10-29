@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Flow TXT — Chrome đang đăng nhập",
+  "version": "0.10.0",
+  "description": "Mỗi file TXT là một prompt độc lập. Tạo ảnh trong tab Flow và lưu vào thư mục đã chọn.",
+  "permissions": ["activeTab", "scripting", "storage", "downloads", "debugger", "nativeMessaging"],
+  "host_permissions": ["https://flow.google.com/*", "https://flow.google/*", "https://labs.google/fx/*"],
+  "action": {"default_title": "Flow TXT", "default_popup": "popup.html"},
+  "background": {"service_worker": "background.js"}
+}
+
+
+
+
+
+
+
+

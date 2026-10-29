@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Flow Video"
+  short_description: "Tạo, theo dõi và tải video Google Flow ổn định"
+  default_prompt: "Dùng $google-flow-video để nắm bắt mã nguồn và sửa luồng tạo, tải video Google Flow trong dự án hiện tại."

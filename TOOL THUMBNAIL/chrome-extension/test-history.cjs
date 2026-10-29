@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const data={};
+const chrome={tabs:{onUpdated:{addListener(){}}},runtime:{onMessage:{addListener(){}}},storage:{local:{get:async()=>structuredClone(data),set:async values=>Object.assign(data,structuredClone(values))}}};
+const context=vm.createContext({chrome,URL,console});
+vm.runInContext(fs.readFileSync(__dirname+'/background.js','utf8'),context);
+(async()=>{
+ const initial=await context.updateRecords({type:'readRecords'});assert.deepEqual(Object.keys(initial.limits),[]);
+ await Promise.all([1,2,3].map(()=>context.updateRecords({type:'quotaHit',model:'Nano Banana Pro'})));
+ assert.equal(data.modelLimits['Nano Banana Pro'].count,3);assert.equal(data.modelLimits['Nano Banana Pro'].disabled,true);
+ await context.updateRecords({type:'saveHistory',run:{id:'one',status:'failed'}});
+ await context.updateRecords({type:'saveHistory',run:{id:'one',status:'partial'}});
+ assert.equal(data.runHistory.length,1);assert.equal(data.runHistory[0].status,'partial');
+ const reload=await context.updateRecords({type:'readRecords'});assert.equal(reload.limits['Nano Banana Pro'].disabled,true);
+ await context.updateRecords({type:'quotaHit',model:'Nano Banana 2',runId:'two',attempt:1});
+ await context.updateRecords({type:'quotaHit',model:'Nano Banana 2',runId:'two',attempt:1});
+ assert.equal(data.modelLimits['Nano Banana 2'].count,1);assert.equal(data.modelLimits['Nano Banana 2'].disabled,false);
+ console.log('PASS: serialized quota counts disable on third event; history upserts a run and survives subsequent reads.');
+})().catch(e=>{console.error(e);process.exitCode=1;});

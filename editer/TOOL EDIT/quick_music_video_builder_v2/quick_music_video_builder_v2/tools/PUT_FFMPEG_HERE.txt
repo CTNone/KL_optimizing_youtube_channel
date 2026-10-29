@@ -1,1 +1,0 @@
-Copy ffmpeg.exe and ffprobe.exe into this folder before build.

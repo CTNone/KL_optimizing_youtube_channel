@@ -1,0 +1,266 @@
+{
+  "url": "https://flow.google.com/project/8afcba24-0f58-46c4-84ff-99cb59e7eb94/edit/15118d8c-677c-4d04-87de-b608e2d88648",
+  "players": [],
+  "buttons": [
+    {
+      "text": "arrow_back",
+      "aria": "Nút quay lại để quay về trang trước",
+      "html": "<button _ngcontent-ng-c3726934359=\"\" flow-icon-button=\"\" maticonbutton=\"\" aria-label=\"Nút quay lại để quay về trang trước\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger back-button mat-unthemed flow-icon-button-transparent flow-button-large flow-icon-button-no-touch-target\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-describedby=\"cdk-describedby-message-ng-1-56\" cdk-describedby-host=\"ng-1\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c3726934359=\"\" role=\"img\" class=\"mat-icon notranslate mat-icon-rtl-mirror google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">arrow_back</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span><span class=\"mat-ripple mat-mdc-button-ripple\"></span></button>"
+    },
+    {
+      "text": "arrow_left",
+      "aria": "Nội dung nghe nhìn trước đó",
+      "html": "<button _ngcontent-ng-c3513704042=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger arrow-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Nội dung nghe nhìn trước đó\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c3513704042=\"\" role=\"img\" class=\"mat-icon notranslate mat-icon-rtl-mirror flow-icon-s google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">arrow_left</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "",
+      "aria": "tuyết rơi.",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"tuyết rơi.\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/ddf1ba14-1100-4056-99e3-7e712e6feef8?Expires=1791374509&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=fkLXwQNdQ5qMd73IR-Mewxa9uoM\" alt=\"tuyết rơi.\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "input.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"input.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/4c773f31-ddbf-4e56-b150-bb72b8680f67?Expires=1791374444&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=6UM8MuN2snHkVDTTY4Bqzqtrtro\" alt=\"input.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "tuyết rơi.",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"tuyết rơi.\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/d4014699-068e-41a6-ba93-28022918dacc?Expires=1791374434&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=x2AWnpKJaRTVVsXMgy2OZGbbcsc\" alt=\"tuyết rơi.\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "input.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"input.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/dfaac805-3fa0-47ff-a7e7-ae7744f7eb16?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=_xmtCfz7VLu0k0VhABS3oaqNEF8\" alt=\"input.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "tuyết rơi mạnh.",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button active\" aria-label=\"tuyết rơi mạnh.\" aria-current=\"true\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/a1fd5cd3-ed71-40d2-891e-d6e9b7957171?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=sqKjvWs6f7B18J811yKU93DvXk8\" alt=\"tuyết rơi mạnh.\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "input.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"input.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/b8dc257d-0e06-406d-a33e-fb6176ea7d7f?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=dnzyUim0yHFufCuWHP_tyJqaRto\" alt=\"input.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "thêm hiệu ứng tuyết rơi.",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"thêm hiệu ứng tuyết rơi.\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/9f3bbafa-eaae-420e-bde2-a449b3dc4cc7?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=Qk-nybpWnhXxZdPjhc-nFMZ3D0o\" alt=\"thêm hiệu ứng tuyết rơi.\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "input.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"input.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/23e04baf-f940-4d4c-b0e2-3e55fecf7b9e?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=T__Z707XM2pWS1VAh6f9SCkgErY\" alt=\"input.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "input.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"input.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/973e2d08-8d4e-4804-b4dd-57f6a144b80c?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=zQkv5mRx2dNdMi1yxDxqehBjjdY\" alt=\"input.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "input.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"input.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/799369de-1d99-4f61-bd58-ace471161d88?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=T8Hv_RPmffsRFrv1xmw9-5Hnc0Y\" alt=\"input.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "tạo ảnh tương tự không text…",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"tạo ảnh tương tự không text…\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/e60be185-eb13-4578-b35d-6577b66e2608?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=-TuhfqO2azPtCweWzKmtCZF8sTM\" alt=\"tạo ảnh tương tự không text…\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "tạo ảnh tương tự không text…",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"tạo ảnh tương tự không text…\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/7c2bf7c9-8051-4ef9-9b65-6f73d271e7d9?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=-K7TmWfmSL9WgwQ_EZedGUdvjuo\" alt=\"tạo ảnh tương tự không text…\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "zLrOUxihRaQ.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"zLrOUxihRaQ.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/11111f61-52a2-44bb-a2ae-4e698163a134?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=BTuMQdudBAa0ayoXqFbBS9XfVJY\" alt=\"zLrOUxihRaQ.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "Tạo ảnh tương tự",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"Tạo ảnh tương tự\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/a85f2180-73b3-4725-a5b9-d84476347164?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=u6CSONueRO5ax6vWanJ8yhvHIy8\" alt=\"Tạo ảnh tương tự\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "zLrOUxihRaQ.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"zLrOUxihRaQ.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/ca6c4464-9834-46c2-a6cf-876261dd2396?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=r_fOdqomfIkKIzknZbF8kQX43Dc\" alt=\"zLrOUxihRaQ.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "Generating similar image without…",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"Generating similar image without…\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/da548f01-942b-4b33-88be-daf68f771d82?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=RDHBFszPzkaTNnHdhh5ilZGVT8M\" alt=\"Generating similar image without…\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "Create similar image",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"Create similar image\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/55fc30e4-bf8a-47bc-91ac-65e03af766a7?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=Uqlv51quNaSNt-NdSyRBbyZ2OT0\" alt=\"Create similar image\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "zLrOUxihRaQ.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"zLrOUxihRaQ.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/f5fb5fc5-5ae7-466a-8df7-b4fbead22573?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=U52WRteiyLaQm10Zwb0WdUgsvHI\" alt=\"zLrOUxihRaQ.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "Person generating image",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"Person generating image\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/8a81df8d-ea1d-4ea6-9195-6d9fd1ec76e3?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=0zhxqa8pIP2m-CubjFytXCZB5VI\" alt=\"Person generating image\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "zLrOUxihRaQ.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"zLrOUxihRaQ.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/c93eec71-a150-486b-ae8b-b33ce782ef5b?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=IJoHCZ5pAW3EQmxo3JGyc-OHFQM\" alt=\"zLrOUxihRaQ.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "Person creating image",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"Person creating image\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/d05bb8b2-53a7-4ea1-8369-8576d8c8ae7c?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=20rQScnwyKcTS6000mxumFNpTgY\" alt=\"Person creating image\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "8Ddgy5tCKtg.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"8Ddgy5tCKtg.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/10620321-7c8b-4a87-b231-79898949aa73?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=e3SLRfIQKzqkDebiWdJfwTuSg8c\" alt=\"8Ddgy5tCKtg.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "8Ddgy5tCKtg.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"8Ddgy5tCKtg.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/a2e277b4-322e-45ad-9a2f-cda72dcf6c34?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=C1Q51S90CZ4eIxBwVCOzOjh8-l8\" alt=\"8Ddgy5tCKtg.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "",
+      "aria": "fBUQSyzHOss.jpg",
+      "html": "<button _ngcontent-ng-c4000485841=\"\" class=\"thumbnail-button\" aria-label=\"fBUQSyzHOss.jpg\" aria-busy=\"false\"><!----><img _ngcontent-ng-c4000485841=\"\" draggable=\"false\" class=\"thumbnail-image\" src=\"https://flow-content.google/image/5a107666-449b-4ce1-b5cf-9fd3721c30d2?Expires=1791374630&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=oHx7Tx9QsupKJsxuA67Umem13Ws\" alt=\"fBUQSyzHOss.jpg\"><!----><!----></button>"
+    },
+    {
+      "text": "arrow_right",
+      "aria": "Nội dung nghe nhìn tiếp theo",
+      "html": "<button _ngcontent-ng-c3513704042=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger arrow-button visible mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Nội dung nghe nhìn tiếp theo\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c3513704042=\"\" role=\"img\" class=\"mat-icon notranslate mat-icon-rtl-mirror flow-icon-s google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">arrow_right</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "favorite",
+      "aria": "Yêu thích",
+      "html": "<button _ngcontent-ng-c126359285=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Yêu thích\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c126359285=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">favorite</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "share",
+      "aria": "Chia sẻ",
+      "html": "<button _ngcontent-ng-c126359285=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Chia sẻ\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c126359285=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">share</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "download",
+      "aria": "Tải nội dung nghe nhìn xuống",
+      "html": "<button _ngcontent-ng-c126359285=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-mdc-tooltip-trigger mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Tải nội dung nghe nhìn xuống\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c126359285=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">download</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "delete",
+      "aria": "Chuyển vào thùng rác",
+      "html": "<button _ngcontent-ng-c126359285=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Chuyển vào thùng rác\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c126359285=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">delete</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "history Ẩn nhật ký ",
+      "aria": null,
+      "html": "<button _ngcontent-ng-c126359285=\"\" flow-button=\"\" matbutton=\"\" class=\"mdc-button mat-mdc-button-base mdc-button--unelevated mat-mdc-unelevated-button mat-unthemed flow-button-primary flow-button-medium flow-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" aria-expanded=\"true\" aria-controls=\"history-sidebar\"><span class=\"mat-mdc-button-persistent-ripple mdc-button__ripple\"></span><mat-icon _ngcontent-ng-c126359285=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">history</mat-icon><span class=\"mdc-button__label\"> Ẩn nhật ký <!----><!----></span><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "more_vert",
+      "aria": "Lựa chọn khác",
+      "html": "<button maticonbutton=\"\" flow-icon-button=\"\" aria-label=\"Lựa chọn khác\" mattooltip=\"Lựa chọn khác\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-mdc-tooltip-trigger mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-haspopup=\"menu\" aria-expanded=\"false\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">more_vert</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": " Xong ",
+      "aria": "Đã chỉnh sửa xong cảnh",
+      "html": "<button _ngcontent-ng-c126359285=\"\" flow-button=\"\" matbutton=\"\" aria-label=\"Đã chỉnh sửa xong cảnh\" class=\"mdc-button mat-mdc-button-base mat-tonal-button mat-unthemed flow-button-secondary flow-button-medium flow-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\"><span class=\"mat-mdc-button-persistent-ripple mdc-button__ripple\"></span><span class=\"mdc-button__label\"> Xong </span><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "add_photo_alternate",
+      "aria": "Lưu khung hình",
+      "html": "<button _ngcontent-ng-c552636144=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger save-frame-button mat-unthemed flow-icon-button-secondary flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Lưu khung hình\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c552636144=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">add_photo_alternate</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "volume_up",
+      "aria": "Tắt tiếng",
+      "html": "<button _ngcontent-ng-c2516342035=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mute-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Tắt tiếng\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c2516342035=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">volume_up</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "skip_previous",
+      "aria": "Chuyển về đoạn video trước",
+      "html": "<button _ngcontent-ng-c2516342035=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger playback-control-button mat-unthemed flow-icon-button-transparent flow-button-large flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Chuyển về đoạn video trước\" aria-describedby=\"cdk-describedby-message-ng-1-57\" cdk-describedby-host=\"ng-1\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c2516342035=\"\" role=\"img\" class=\"mat-icon notranslate fill google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">skip_previous</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "play_arrow",
+      "aria": "Phát",
+      "html": "<button _ngcontent-ng-c2516342035=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger play-button mat-unthemed flow-icon-button-secondary flow-button-large flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Phát\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c2516342035=\"\" role=\"img\" class=\"mat-icon notranslate fill google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">play_arrow</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "skip_next",
+      "aria": "Chuyển đến đoạn video tiếp theo",
+      "html": "<button _ngcontent-ng-c2516342035=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger playback-control-button mat-unthemed flow-icon-button-transparent flow-button-large flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Chuyển đến đoạn video tiếp theo\" aria-describedby=\"cdk-describedby-message-ng-1-58\" cdk-describedby-host=\"ng-1\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c2516342035=\"\" role=\"img\" class=\"mat-icon notranslate fill google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">skip_next</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "fullscreen",
+      "aria": "Toàn màn hình",
+      "html": "<button _ngcontent-ng-c2516342035=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger fullscreen-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Toàn màn hình\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c2516342035=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">fullscreen</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "repeat",
+      "aria": "Tắt tính năng phát lặp lại",
+      "html": "<button _ngcontent-ng-c2516342035=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger loop-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target selected\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Tắt tính năng phát lặp lại\" aria-pressed=\"true\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c2516342035=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">repeat</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "library_add",
+      "aria": "Lưu vào dự án",
+      "html": "<button flowhotbarbutton=\"\" type=\"button\" class=\"mat-mdc-tooltip-trigger\" _nghost-ng-c556896446=\"\" aria-label=\"Lưu vào dự án\"><mat-icon _ngcontent-ng-c556896446=\"\" role=\"img\" class=\"mat-icon notranslate flow-icon-m google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">library_add</mat-icon></button>"
+    },
+    {
+      "text": "download",
+      "aria": "Tải xuống",
+      "html": "<button flowhotbarbutton=\"\" type=\"button\" class=\"mat-mdc-menu-trigger mat-mdc-tooltip-trigger\" _nghost-ng-c556896446=\"\" aria-label=\"Tải xuống\" aria-haspopup=\"menu\" aria-expanded=\"false\"><mat-icon _ngcontent-ng-c556896446=\"\" role=\"img\" class=\"mat-icon notranslate flow-icon-m google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">download</mat-icon></button>"
+    },
+    {
+      "text": "flag",
+      "aria": "Gắn cờ cho kết quả",
+      "html": "<button flowhotbarbutton=\"\" type=\"button\" class=\"mat-mdc-tooltip-trigger\" _nghost-ng-c556896446=\"\" aria-label=\"Gắn cờ cho kết quả\"><mat-icon _ngcontent-ng-c556896446=\"\" role=\"img\" class=\"mat-icon notranslate flow-icon-m google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">flag</mat-icon></button>"
+    },
+    {
+      "text": "keyboard_return",
+      "aria": "Sử dụng lại câu lệnh",
+      "html": "<button flowhotbarbutton=\"\" type=\"button\" class=\"mat-mdc-tooltip-trigger\" _nghost-ng-c556896446=\"\" aria-label=\"Sử dụng lại câu lệnh\"><mat-icon _ngcontent-ng-c556896446=\"\" role=\"img\" class=\"mat-icon notranslate flow-icon-m google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">keyboard_return</mat-icon></button>"
+    },
+    {
+      "text": "add",
+      "aria": "Thành phần",
+      "html": "<button _ngcontent-ng-c2121722360=\"\" cdkoverlayorigin=\"\" class=\"chip-container\" aria-label=\"Thành phần\" aria-busy=\"false\"><div _ngcontent-ng-c2121722360=\"\" class=\"chip-image-wrapper\"><img _ngcontent-ng-c2121722360=\"\" alt=\"Hình ảnh thành phần\" class=\"chip-image\" src=\"https://flow-content.google/image/b8dc257d-0e06-406d-a33e-fb6176ea7d7f?Expires=1791374629&amp;KeyName=labs-flow-prod-cdn-key&amp;Signature=dnzyUim0yHFufCuWHP_tyJqaRto\"><!----><!----><!----></div><!----><div _ngcontent-ng-c2121722360=\"\" class=\"hover-icon-overlay\" data-state=\"closed\"><mat-icon _ngcontent-ng-c2121722360=\"\" role=\"img\" class=\"mat-icon notranslate hover-icon flow-icon-s google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">add</mat-icon></div><!----></button>"
+    },
+    {
+      "text": "keyboard_return",
+      "aria": "Sử dụng lại câu lệnh",
+      "html": "<button _ngcontent-ng-c1364757413=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger action-button reuse-prompt-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Sử dụng lại câu lệnh\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c1364757413=\"\" role=\"img\" class=\"mat-icon notranslate mat-icon-rtl-mirror google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">keyboard_return</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "add_2",
+      "aria": "Thêm đoạn video",
+      "html": "<button _ngcontent-ng-c1050545685=\"\" flow-icon-button=\"\" maticonbutton=\"\" cdkoverlayorigin=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger add-clip-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Thêm đoạn video\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><!----><mat-icon _ngcontent-ng-c1050545685=\"\" role=\"img\" class=\"mat-icon notranslate add-clip-button-icon google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">add_2</mat-icon><!----><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "zoom_out",
+      "aria": "Thu nhỏ",
+      "html": "<button _ngcontent-ng-c1050545685=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger zoom-button zoom-out-button mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Thu nhỏ\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c1050545685=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">zoom_out</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "zoom_in",
+      "aria": "Phóng to",
+      "html": "<button _ngcontent-ng-c1050545685=\"\" flow-icon-button=\"\" maticonbutton=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger zoom-button zoom-in-button mat-mdc-button-disabled mat-unthemed flow-icon-button-transparent flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Phóng to\" mat-ripple-loader-disabled=\"\" disabled=\"true\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon _ngcontent-ng-c1050545685=\"\" role=\"img\" class=\"mat-icon notranslate google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">zoom_in</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "add",
+      "aria": "Thêm thành phần vào ô nhập câu lệnh",
+      "html": "<button maticonbutton=\"\" type=\"button\" aria-haspopup=\"true\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger add-menu-trigger mat-unthemed\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" aria-label=\"Thêm thành phần vào ô nhập câu lệnh\" aria-expanded=\"false\" aria-describedby=\"cdk-describedby-message-ng-1-60\" cdk-describedby-host=\"ng-1\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><mat-icon role=\"img\" class=\"mat-icon notranslate add-menu-icon google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">add</mat-icon><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    },
+    {
+      "text": "arrow_forward",
+      "aria": "Bắt đầu tạo",
+      "html": "<button _ngcontent-ng-c3680350239=\"\" flow-icon-button=\"\" maticonbutton=\"\" type=\"submit\" aria-label=\"Bắt đầu tạo\" cdkoverlayorigin=\"\" class=\"mdc-icon-button mat-mdc-icon-button mat-mdc-button-base generate-icon-button mat-mdc-button-disabled mat-unthemed flow-icon-button-secondary flow-button-small flow-icon-button-no-touch-target\" mat-ripple-loader-uninitialized=\"\" mat-ripple-loader-class-name=\"mat-mdc-button-ripple\" mat-ripple-loader-centered=\"\" mat-ripple-loader-disabled=\"\" disabled=\"true\"><span class=\"mat-mdc-button-persistent-ripple mdc-icon-button__ripple\"></span><!----><mat-icon _ngcontent-ng-c3680350239=\"\" role=\"img\" class=\"mat-icon notranslate flow-icon-m mat-icon-rtl-mirror google-symbols mat-icon-no-color\" aria-hidden=\"true\" data-mat-icon-type=\"font\">arrow_forward</mat-icon><!----><!----><span class=\"mat-focus-indicator\"></span><span class=\"mat-mdc-button-touch-target\"></span></button>"
+    }
+  ]
+}
