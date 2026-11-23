@@ -7,6 +7,7 @@ import os
 import queue
 import threading
 import webbrowser
+from datetime import date, timedelta
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from pathlib import Path
@@ -28,10 +29,8 @@ EVENT_LABELS = {
     "channel_asset_deleted":"Gỡ tài nguyên kênh", "stage_changed":"Cập nhật Bước",
     "qc_approved":"Duyệt video", "qc_rejected":"Chưa duyệt", "rework_requested":"Yêu cầu chỉnh sửa",
     "handoff_prepared":"Chuẩn bị thư mục dự án", "tool_open_requested":"Mở công cụ hỗ trợ",
-    "analytics_data_deleted":"Xóa dữ liệu Analytics",
-    "video_music_playlist_linked":"Gắn playlist nhạc", "render_queued":"Đưa video vào hàng đợi",
-    "render_started":"Bắt đầu dựng video", "render_succeeded":"Dựng video xong", "render_failed":"Dựng video lỗi",
-    "render_interrupted":"Dựng video bị gián đoạn", "render_cancel_requested":"Yêu cầu dừng render",
+    "analytics_data_deleted":"Xóa dữ liệu Analytics", "channel_analytics_refreshed":"Làm mới Analytics kênh",
+    "youtube_url_updated":"Cập nhật link YouTube",
 }
 
 class Hub(tk.Tk):
@@ -53,6 +52,7 @@ class Hub(tk.Tk):
         self.adapters = Adapters(store, workspace)
         self.analytics_client = YouTubeAnalyticsClient()
         self.analytics_project_rows = {}
+        self.analytics_channel_map = {}
         self.analytics_selected_id = None
         self.current = None
         self.actor = tk.StringVar(value="Người vận hành")
@@ -193,42 +193,69 @@ class Hub(tk.Tk):
         ttk.Label(self.analytics_page, text="Theo dõi hiệu suất sau đăng",
                   font=("Segoe UI", 18, "bold")).pack(anchor="w")
         ttk.Label(self.analytics_page,
-                  text="Chọn video đã đăng để xem snapshot. “Làm mới” lấy số mới nhất YouTube đã xử lý và lưu một snapshot mới.",
+                  text="Mỗi kênh dùng một lần kết nối Google riêng. “Làm mới kênh” lưu snapshot cấp kênh; “Làm mới video” lưu snapshot cho video đang chọn.",
                   foreground="#62738a", wraplength=1100).pack(anchor="w", pady=(2, 8))
         toolbar = ttk.Frame(self.analytics_page)
         toolbar.pack(fill="x", pady=(0, 6))
         self.analytics_status = tk.StringVar(value="Chưa chọn video.")
         ttk.Label(toolbar, textvariable=self.analytics_status, foreground="#456181").pack(side="left", fill="x", expand=True)
-        self.analytics_refresh_button = ttk.Button(toolbar, text="Làm mới chỉ số", command=lambda: self.safe(self.refresh_selected_analytics))
+        self.analytics_refresh_button = ttk.Button(toolbar, text="Làm mới video", command=lambda: self.safe(self.refresh_selected_analytics))
         self.analytics_refresh_button.pack(side="right", padx=(6, 0))
-        ttk.Button(toolbar, text="Kết nối Google…", command=lambda: self.safe(self.connect_google)).pack(side="right")
-        ttk.Button(toolbar, text="Ngắt kết nối & xóa snapshot", command=lambda: self.safe(self.disconnect_google)).pack(side="right", padx=(0, 6))
+        ttk.Button(toolbar, text="Làm mới kênh", command=lambda: self.safe(self.refresh_channel_analytics)).pack(side="right", padx=(6, 0))
+        row = ttk.Frame(self.analytics_page)
+        row.pack(fill="x", pady=(0, 8))
+        self.analytics_channel_filter = tk.StringVar(value="Tất cả kênh")
+        self.analytics_channel_combo = ttk.Combobox(row, textvariable=self.analytics_channel_filter, state="readonly", width=42)
+        self.analytics_channel_combo.pack(side="left")
+        self.analytics_channel_combo.bind("<<ComboboxSelected>>", lambda e: self.refresh_analytics_projects())
+        ttk.Button(row, text="Kết nối kênh đang chọn", command=lambda: self.safe(self.connect_google)).pack(side="left", padx=(6, 0))
+        ttk.Button(row, text="Ngắt kết nối kênh", command=lambda: self.safe(self.disconnect_google)).pack(side="left", padx=(6, 0))
         ttk.Label(self.analytics_page, text="VIDEO ĐÃ ĐĂNG", font=("Segoe UI", 10, "bold")).pack(anchor="w")
         self.analytics_tree = self.tree(self.analytics_page,
-            [("title", "Video", 300), ("channel", "Kênh", 150), ("published", "Cập nhật Hub", 125),
-             ("url", "URL YouTube", 360), ("snapshots", "Snapshots", 85)], height=7)
+            [("title", "Video", 250), ("channel", "Kênh", 130), ("published", "Ngày đăng", 95),
+             ("url", "URL YouTube", 260), ("views", "Views", 70), ("ctr", "CTR · 28d", 80),
+             ("avd", "AVD", 60), ("watch", "Phút xem", 80), ("snapshots", "Snapshots", 75)], height=7)
         self.analytics_tree.bind("<<TreeviewSelect>>", self.select_analytics_project)
-        ttk.Label(self.analytics_page, text="LỊCH SỬ SNAPSHOT · CTR DÙNG BÁO CÁO 28 NGÀY GẦN NHẤT ĐÃ CÓ",
+        ttk.Label(self.analytics_page, text="LỊCH SỬ SNAPSHOT VIDEO · CTR DÙNG BÁO CÁO 28 NGÀY GẦN NHẤT ĐÃ CÓ",
                   font=("Segoe UI", 10, "bold")).pack(anchor="w", pady=(10, 4))
         self.analytics_history_tree = self.tree(self.analytics_page,
             [("recorded", "Đã làm mới", 145), ("views", "Lượt xem", 80), ("ctr", "CTR · 28 ngày", 95),
              ("avd", "AVD", 80), ("watch", "Thời gian xem (phút)", 140),
              ("impressions", "Impressions · 28 ngày", 150), ("comments", "Comment", 80),
              ("likes", "Like", 70), ("shares", "Share", 70), ("retention", "Xem trung bình", 110)],
-            height=7, horizontal=True)
+            height=6, horizontal=True)
+        ttk.Label(self.analytics_page, text="SNAPSHOT CẤP KÊNH · TỔNG HỢP TOÀN KÊNH TRONG KHOẢNG THỜI GIAN ĐÃ CHỌN",
+                  font=("Segoe UI", 10, "bold")).pack(anchor="w", pady=(10, 4))
+        self.channel_metrics_tree = self.tree(self.analytics_page,
+            [("recorded", "Đã làm mới", 145), ("start", "Từ ngày", 90), ("through", "Đến ngày", 90),
+             ("views", "Lượt xem", 80), ("watch", "Phút xem", 90), ("impressions", "Impressions", 100),
+             ("ctr", "CTR", 70), ("avd", "AVD", 70), ("retention", "Xem trung bình", 100)],
+            height=4, horizontal=True)
         ttk.Label(self.analytics_page,
-                  text="CTR và impressions đến từ báo cáo hằng ngày của YouTube Reporting API; thời điểm dữ liệu có sẵn có thể trễ 1–2 ngày. AVD = thời lượng xem trung bình.",
+                  text="CTR và impressions đến từ báo cáo hằng ngày của YouTube Reporting API; dữ liệu có thể trễ 1–2 ngày. CTR cấp kênh là tổng impressions có trọng số của các video trong báo cáo 28 ngày gần nhất.",
                   foreground="#62738a", wraplength=1100).pack(anchor="w", pady=(5, 0))
 
     def refresh_analytics_projects(self):
-        rows = self.store.published_projects()
+        channel = self.analytics_channel_map.get(self.analytics_channel_filter.get(), {})
+        rows = [row for row in self.store.published_projects() if not channel or row["channel_id"] == channel["id"]]
         self.analytics_project_rows = {row["id"]: row for row in rows}
         self.analytics_tree.delete(*self.analytics_tree.get_children())
         for row in rows:
             snapshots = self.store.metric_snapshots(row["id"])
+            latest = snapshots[0] if snapshots else {}
+            try:
+                values = json.loads(latest.get("analytics_json") or "{}")
+            except (TypeError, ValueError):
+                values = {}
+            ctr = values.get("ctr")
+            avd = values.get("average_view_duration")
             label = f"{row['title']} · {row['album_name']}" if row.get("album_name") else row["title"]
             self.analytics_tree.insert("", "end", iid=row["id"], values=(
-                label, row["channel_name"], row["updated_at"][:10], row["youtube_url"], len(snapshots)))
+                label, row["channel_name"], row.get("published_at") or row["updated_at"][:10],
+                row["youtube_url"], self._metric_number(values.get("views")),
+                "—" if ctr is None else f"{ctr * 100:.2f}%",
+                "—" if avd is None else f"{int(avd)//60}:{int(avd)%60:02d}",
+                self._metric_number(values.get("watch_minutes"), 1), len(snapshots)))
         if self.analytics_selected_id in self.analytics_project_rows:
             self.analytics_tree.selection_set(self.analytics_selected_id)
             self.show_analytics_history(self.analytics_selected_id)
@@ -236,6 +263,36 @@ class Hub(tk.Tk):
             self.analytics_selected_id = None
             self.analytics_history_tree.delete(*self.analytics_history_tree.get_children())
             self.analytics_status.set(f"{len(rows)} video đã đăng. Chọn một video để xem lịch sử.")
+        self.refresh_channel_metrics()
+
+    def refresh_channel_metrics(self):
+        self.channel_metrics_tree.delete(*self.channel_metrics_tree.get_children())
+        channel = self.analytics_channel_map.get(self.analytics_channel_filter.get(), {})
+        if not channel:
+            return
+        for row in self.store.channel_metric_snapshots(channel["id"]):
+            try:
+                values = json.loads(row.get("analytics_json") or "{}")
+            except (TypeError, ValueError):
+                values = {}
+            ctr = values.get("ctr")
+            avd = values.get("average_view_duration")
+            self.channel_metrics_tree.insert("", "end", values=(
+                row["recorded_at"][:16].replace("T", " "), row.get("start_date", ""),
+                row.get("data_through", ""), self._metric_number(values.get("views")),
+                self._metric_number(values.get("watch_minutes"), 1),
+                self._metric_number(values.get("impressions")),
+                "—" if ctr is None else f"{ctr * 100:.2f}%",
+                "—" if avd is None else f"{int(avd)//60}:{int(avd)%60:02d}",
+                "—" if values.get("average_view_percentage") is None else f"{values['average_view_percentage']:.1f}%"))
+
+    def selected_analytics_channel(self):
+        channel = self.analytics_channel_map.get(self.analytics_channel_filter.get())
+        if not channel:
+            raise DomainError("Chọn một kênh cụ thể trước.")
+        if not channel.get("youtube_channel_id"):
+            raise DomainError("Kênh chưa có YouTube channel ID. Mở Quản lý kênh và nhập channel ID trước.")
+        return channel
 
     def select_analytics_project(self, _event=None):
         selected = self.analytics_tree.selection()
@@ -278,46 +335,74 @@ class Hub(tk.Tk):
         self.analytics_status.set(
             f"{project.get('title', 'Video')} · {project.get('channel_name', '')} · {len(snapshots)} snapshot(s) · Chỉ số tích lũy từ lúc bắt đầu đăng ký video trong Hub; CTR theo 28 ngày gần nhất có báo cáo.")
 
-    def connect_google(self):
+    def _ensure_oauth_client(self):
+        if self.analytics_client.client_path.is_file():
+            return
         path = filedialog.askopenfilename(title="Chọn OAuth client Desktop app JSON",
             filetypes=[("OAuth client JSON", "*.json"), ("Tất cả file", "*.*")], parent=self)
         if not path:
-            return
+            raise DomainError("Chưa chọn file OAuth client JSON.")
         self.analytics_client.configure(path)
-        self.async_action(self.analytics_client.connect, "Đã kết nối Google Analytics. Bây giờ có thể làm mới chỉ số.")
+
+    def _channel_start_date(self, channel_id):
+        dates = [row.get("published_at") or row["created_at"][:10]
+                 for row in self.store.published_projects() if row["channel_id"] == channel_id]
+        return min(dates) if dates else (date.today() - timedelta(days=365)).isoformat()
+
+    def connect_google(self):
+        channel = self.selected_analytics_channel()
+        self._ensure_oauth_client()
+        channel_id = channel["youtube_channel_id"]
+        self.async_action(lambda: self.analytics_client.connect(channel_id),
+                          f"Đã kết nối Google cho kênh {channel['name']}.")
 
     def disconnect_google(self):
+        channel = self.selected_analytics_channel()
         if not messagebox.askyesno("Ngắt kết nối Google",
-                "Thu hồi quyền OAuth, xóa thông tin kết nối và xóa các snapshot Analytics đã lưu trong Hub?\n\n"
-                "Việc này không thay đổi video hoặc số liệu trên YouTube.", parent=self):
+                f"Thu hồi quyền OAuth và xóa snapshot Analytics của kênh ‘{channel['name']}’?\n\n"
+                "Các kênh khác và video trên YouTube không bị ảnh hưởng.", parent=self):
             return
         actor = self.actor_name()
+        channel_id = channel["youtube_channel_id"]
 
         def clear():
-            self.analytics_client.disconnect()
-            count = self.store.delete_analytics_data(actor)
+            self.analytics_client.disconnect(channel_id)
+            count = self.store.delete_analytics_data(actor, channel_id)
             return {"snapshots_removed": count}
-        self.async_action(clear, "Đã ngắt kết nối Google và xóa snapshot Analytics trong Hub.")
+        self.async_action(clear, f"Đã ngắt kết nối và xóa snapshot Analytics của kênh {channel['name']}.")
 
     def refresh_selected_analytics(self):
         project_id = self.analytics_selected_id
         if not project_id or project_id not in self.analytics_project_rows:
             raise DomainError("Chọn một video đã đăng trước khi làm mới.")
         project = dict(self.analytics_project_rows[project_id])
+        channel_id = project.get("youtube_channel_id")
+        if not channel_id:
+            raise DomainError("Kênh của video chưa có YouTube channel ID.")
         video_id = video_id_from_url(project.get("youtube_url"))
-        if not self.analytics_client.client_path.is_file():
-            path = filedialog.askopenfilename(title="Chọn OAuth client Desktop app JSON",
-                filetypes=[("OAuth client JSON", "*.json"), ("Tất cả file", "*.*")], parent=self)
-            if not path:
-                return
-            self.analytics_client.configure(path)
+        self._ensure_oauth_client()
+        start_date = project.get("published_at") or project.get("created_at", "")[:10]
         actor = self.actor_name()
 
         def update():
-            values = self.analytics_client.video_metrics(video_id, project.get("created_at"))
+            values = self.analytics_client.video_metrics(video_id, start_date, channel_id)
             self.store.save_analytics_snapshot(project_id, values, actor)
             return values
-        self.async_action(update, "Đã lưu snapshot YouTube Analytics.")
+        self.async_action(update, "Đã lưu snapshot YouTube Analytics cho video.")
+
+    def refresh_channel_analytics(self):
+        channel = self.selected_analytics_channel()
+        self._ensure_oauth_client()
+        channel_key = channel["id"]
+        youtube_channel_id = channel["youtube_channel_id"]
+        start_date = self._channel_start_date(channel_key)
+        actor = self.actor_name()
+
+        def update():
+            values = self.analytics_client.channel_metrics(youtube_channel_id, start_date)
+            self.store.save_channel_analytics_snapshot(channel_key, values, actor)
+            return values
+        self.async_action(update, f"Đã lưu snapshot Analytics cho kênh {channel['name']}.")
 
     def show_workspace(self):
         self.main_tabs.select(self.workspace_page)
@@ -360,6 +445,8 @@ class Hub(tk.Tk):
         self.edit_title = tk.StringVar()
         self.edit_owner = tk.StringVar()
         self.edit_due = tk.StringVar()
+        self.edit_youtube_url = tk.StringVar()
+        self.edit_published_at = tk.StringVar()
         ttk.Label(self.overview, text="Đợt phát hành (tùy chọn)").pack(anchor="w", pady=(5, 2))
         album_row = ttk.Frame(self.overview)
         album_row.pack(fill="x")
@@ -370,6 +457,13 @@ class Hub(tk.Tk):
         for label, var in [("Tiêu đề dự kiến", self.edit_title), ("Người phụ trách", self.edit_owner), ("Hạn hoàn thành (YYYY-MM-DD)", self.edit_due)]:
             ttk.Label(self.overview, text=label).pack(anchor="w", pady=(5, 0))
             ttk.Entry(self.overview, textvariable=var).pack(fill="x")
+        url_row = ttk.Frame(self.overview)
+        url_row.pack(fill="x", pady=(8, 0))
+        ttk.Label(url_row, text="Link YouTube:").pack(side="left")
+        ttk.Entry(url_row, textvariable=self.edit_youtube_url).pack(side="left", fill="x", expand=True, padx=(5, 5))
+        ttk.Label(url_row, text="Ngày đăng (YYYY-MM-DD):").pack(side="left")
+        ttk.Entry(url_row, textvariable=self.edit_published_at, width=12).pack(side="left", padx=(5, 5))
+        ttk.Button(url_row, text="Lưu link", command=lambda: self.safe(self.save_youtube_url)).pack(side="left")
         ttk.Label(self.overview, text="Mô tả riêng của video/mix (mô tả chung của đợt phát hành sẽ được dùng kèm)").pack(anchor="w", pady=(10, 3))
         self.brief = tk.Text(self.overview, height=8, wrap="word", font=("Segoe UI", 11))
         self.brief.pack(fill="both", expand=True)
@@ -507,6 +601,12 @@ class Hub(tk.Tk):
         self.refresh_albums()
         self.refresh_projects()
         self.refresh_home(projects)
+        self.analytics_channel_map = {
+            f"{c['name']} · {(c.get('youtube_channel_id') or c['id'])[:10]}" + (" [lưu trữ]" if c["archived"] else ""): c
+            for c in channels}
+        self.analytics_channel_combo["values"] = ["Tất cả kênh", *self.analytics_channel_map]
+        if self.analytics_channel_filter.get() not in self.analytics_channel_map:
+            self.analytics_channel_filter.set("Tất cả kênh")
         self.refresh_analytics_projects()
         if self.current:
             self.load_project(self.current["id"])
@@ -581,7 +681,8 @@ class Hub(tk.Tk):
             self.tabs.tab(self.qc_tab, state="disabled")
             self.project_heading.configure(text="Chọn một video/mix trong danh sách đang lọc")
             self.project_meta.configure(text="")
-            for var in (self.edit_title, self.edit_owner, self.edit_due, self.scheduled_at, self.youtube_url):
+            for var in (self.edit_title, self.edit_owner, self.edit_due, self.edit_youtube_url,
+                        self.edit_published_at, self.scheduled_at, self.youtube_url):
                 var.set("")
             self.brief.delete("1.0", "end")
             self.assets_tree.delete(*self.assets_tree.get_children())
@@ -670,6 +771,8 @@ class Hub(tk.Tk):
         self.edit_title.set(p["title"])
         self.edit_owner.set(p["owner"])
         self.edit_due.set(p["due_date"])
+        self.edit_youtube_url.set(p["youtube_url"])
+        self.edit_published_at.set(p["published_at"])
         album_options = {f"{row['name']} · {row['channel_name']}": row["id"]
                          for row in self.store.albums(p["channel_id"])}
         self.video_album_ids = album_options
@@ -747,12 +850,15 @@ class Hub(tk.Tk):
         existing = self.channel_map.get(self.channel_filter.get())
         dialog = tk.Toplevel(self)
         dialog.title("Kênh YouTube")
-        dialog.geometry("620x380")
+        dialog.geometry("620x460")
         fields = {}
-        for key, label in [("name","Tên kênh"),("niche","Ngách / thể loại"),("url","URL kênh"),("style","Phong cách hình ảnh và âm thanh")]:
+        for key, label in [("name","Tên kênh"),("youtube_channel_id","YouTube channel ID (UC…)"),
+                           ("niche","Ngách / thể loại"),("url","URL kênh"),("style","Phong cách hình ảnh và âm thanh")]:
             ttk.Label(dialog, text=label).pack(anchor="w", padx=15, pady=(8, 1))
             fields[key] = tk.StringVar(value=existing[key] if existing else "")
             ttk.Entry(dialog, textvariable=fields[key]).pack(fill="x", padx=15)
+        ttk.Label(dialog, text="Channel ID dùng cho YouTube Analytics; mỗi kênh cần kết nối Google riêng.",
+                  foreground="#62738a").pack(anchor="w", padx=15, pady=(3, 0))
         archived = tk.BooleanVar(value=bool(existing and existing["archived"]))
         ttk.Checkbutton(dialog, text="Lưu trữ kênh (giữ dữ liệu dự án)", variable=archived).pack(anchor="w", padx=15, pady=8)
         def save():
@@ -873,6 +979,13 @@ class Hub(tk.Tk):
         p = self.need_project()
         self.store.update_project(p["id"], p["revision"], self.edit_title.get(), self.brief.get("1.0", "end").strip(), self.edit_owner.get(), self.edit_due.get().strip(), self.actor_name())
         self.refresh()
+
+    def save_youtube_url(self):
+        p = self.need_project()
+        self.store.update_youtube_url(p["id"], p["revision"], self.edit_youtube_url.get().strip(),
+                                      self.edit_published_at.get().strip(), self.actor_name())
+        self.refresh()
+        self.status.set("Đã lưu link YouTube và ngày đăng.")
 
     def set_video_album(self):
         p = self.need_project()
@@ -1052,13 +1165,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--demo", action="store_true")
     parser.add_argument("--self-check", type=Path)
-    parser.add_argument("--smoke-render", type=Path)
     args = parser.parse_args()
     workspace = find_workspace()
-    if args.smoke_render:
-        from smoke import run
-        run(workspace, args.smoke_render)
-        return
     folder = workspace / "CONTENT HUB" / "data"
     folder.mkdir(parents=True, exist_ok=True)
     database = folder / ("demo.sqlite3" if args.demo else "content_hub.sqlite3")
@@ -1076,6 +1184,7 @@ def main():
             app.update()
             if store.projects():
                 app.load_project(store.projects()[0]["id"])
+            args.self_check.parent.mkdir(parents=True, exist_ok=True)
             args.self_check.write_text(json.dumps({"ui": "OK", "database": str(database),
                                                   "adapters": app.adapters.status(), "tabs": len(app.tabs.tabs()),
                                                   "channels": len(store.channels()), "projects": len(store.projects()),

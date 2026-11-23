@@ -1,14 +1,12 @@
 import json
-import sqlite3
-import subprocess
 import tempfile
-import threading
 import unittest
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from store import Store, DomainError, CHECKS, fingerprint, TZ
-from services import Adapters, RenderWorker, InstanceLock, find_workspace
+from services import InstanceLock
 from demo import seed
+from youtube_analytics import YouTubeAnalyticsClient
 
 class DomainTests(unittest.TestCase):
     def setUp(self):
@@ -124,30 +122,52 @@ class DomainTests(unittest.TestCase):
         with self.assertRaises(DomainError):
             self.store.advance(self.project, p["revision"], self.actor, youtube_url="https://youtube.com.evil.example/watch?v=x")
         self.store.advance(self.project, p["revision"], self.actor, youtube_url="https://youtu.be/example_id")
+        published = self.store.project(self.project)
+        self.assertEqual(published["stage"], "published")
+        self.assertTrue(published["published_at"])
         self.store.add_metrics(self.project, 100, 200, 1000, 5, self.actor)
         with self.assertRaises(DomainError):
             self.store.add_metrics(self.project, 100, float("nan"), 1000, 5, self.actor)
         self.assertEqual(self.store.export_bundle(self.project)["metrics"][0]["views"], 100)
 
-    def test_render_excludes_parallel_jobs_and_recovers_interruption(self):
-        self.to_edit()
-        first = self.store.create_job(self.project, {"seconds": 6}, self.actor)
-        with self.assertRaises(DomainError):
-            self.store.create_job(self.project, {}, self.actor)
-        job = self.store.claim_job()
-        self.assertEqual(job["id"], first)
-        self.store.recover_jobs()
-        self.assertEqual(self.store.jobs()[0]["state"], "interrupted")
-        second = self.store.create_job(self.project, {}, self.actor, retry_of=first)
-        self.store.cancel_job(second, self.actor)
-        self.assertIsNone(self.store.claim_job())
+    def test_manual_stage_is_audited_and_allows_free_jump(self):
+        self.store.set_stage(self.project, "thumbnail", self.actor)
+        project = self.store.project(self.project)
+        self.assertEqual(project["stage"], "thumbnail")
+        event = self.store.events(self.project)[0]
+        detail = json.loads(event["detail_json"])
+        self.assertTrue(detail["manual"])
+        self.assertTrue(detail["override"])
+        self.store.set_stage(self.project, "idea", self.actor)
+        self.assertEqual(self.store.project(self.project)["stage"], "idea")
 
-    def test_busy_job_blocks_review(self):
-        self.to_edit()
-        self.asset("final", slot="main")
-        self.store.create_job(self.project, {}, self.actor)
+    def test_channel_youtube_id_is_validated_and_unique(self):
+        youtube_id = "UC" + "a" * 22
+        channel = self.store.save_channel("Analytics One", youtube_channel_id=youtube_id)
+        self.assertEqual(self.store.channel(channel)["youtube_channel_id"], youtube_id)
         with self.assertRaises(DomainError):
-            self.step()
+            self.store.save_channel("Analytics Two", youtube_channel_id=youtube_id)
+        with self.assertRaises(DomainError):
+            self.store.save_channel("Analytics Three", youtube_channel_id="not-a-channel-id")
+
+    def test_analytics_snapshots_and_channel_scoped_delete(self):
+        first = self.store.save_channel("Analytics One", youtube_channel_id="UC" + "a" * 22)
+        second = self.store.save_channel("Analytics Two", youtube_channel_id="UC" + "b" * 22)
+        self.store.save_channel_analytics_snapshot(first, {"views": 10, "ctr": 0.05}, self.actor)
+        self.store.save_channel_analytics_snapshot(second, {"views": 20, "ctr": 0.06}, self.actor)
+        self.assertEqual(len(self.store.channel_metric_snapshots(first)), 1)
+        removed = self.store.delete_analytics_data(self.actor, self.store.channel(first)["youtube_channel_id"])
+        self.assertEqual(removed, 1)
+        self.assertEqual(self.store.channel_metric_snapshots(first), [])
+        self.assertEqual(len(self.store.channel_metric_snapshots(second)), 1)
+
+    def test_delete_project_snapshots_before_removal(self):
+        self.store.delete_project(self.project, self.actor)
+        with self.assertRaises(DomainError):
+            self.store.project(self.project)
+        event = self.store.events()[0]
+        self.assertEqual(event["action"], "video_project_deleted")
+        self.assertTrue(json.loads(event["detail_json"])["project"]["title"])
 
     def test_database_backup_is_consistent(self):
         destination = self.root / "backup.sqlite3"
@@ -167,6 +187,24 @@ class DomainTests(unittest.TestCase):
             lock.close()
 
 
+class AnalyticsParsingTests(unittest.TestCase):
+    def test_reach_summary_weights_ctr_by_impressions(self):
+        summary = YouTubeAnalyticsClient._reach_summary([
+            {"date": date(2026, 11, 20), "impressions": 1000, "ctr_percent": 4.0},
+            {"date": date(2026, 11, 21), "impressions": 3000, "ctr_percent": 8.0},
+        ])
+        self.assertAlmostEqual(summary["ctr"], 0.07)
+        self.assertEqual(summary["impressions"], 4000)
+        self.assertEqual(summary["ctr_start_date"], "2026-11-20")
+        self.assertEqual(summary["ctr_data_through"], "2026-11-21")
+
+    def test_reach_summary_without_impressions_is_empty(self):
+        summary = YouTubeAnalyticsClient._reach_summary([])
+        self.assertIsNone(summary["ctr"])
+        self.assertEqual(summary["impressions"], 0)
+        self.assertIsNone(summary["ctr_data_through"])
+
+
 class DemoSeedTests(unittest.TestCase):
     def test_demo_seed_has_multichannel_hierarchy_and_is_idempotent(self):
         with tempfile.TemporaryDirectory(prefix="hub demo ") as temporary:
@@ -183,38 +221,6 @@ class DemoSeedTests(unittest.TestCase):
             self.assertEqual(len(projects), 12)
             self.assertEqual(sum(album["video_count"] for album in albums), 12)
             self.assertTrue((root / "OUTPUT TỔNG" / "Content Hub" / "Demo Assets" / "demo_thumbnail.png").is_file())
-
-
-class RenderIntegrationTests(unittest.TestCase):
-    setUp = DomainTests.setUp
-    tearDown = DomainTests.tearDown
-    asset = DomainTests.asset
-    step = DomainTests.step
-    to_edit = DomainTests.to_edit
-    def test_real_render_registers_asset_and_preserves_provenance(self):
-        workspace = find_workspace()
-        adapters = Adapters(self.store, workspace)
-        ffmpeg = adapters.editor_dir / "tools" / "ffmpeg.exe"
-        if not ffmpeg.is_file():
-            self.skipTest("FFmpeg not available")
-        self.to_edit()
-        clip = self.root / "clip.mp4"
-        subprocess.run([str(ffmpeg), "-y", "-v", "error", "-f", "lavfi", "-i",
-                        "testsrc2=size=320x180:rate=24:duration=2", "-c:v", "libx264", str(clip)], check=True)
-        self.store.add_asset(self.project, "clip", clip, self.actor)
-        job_id = adapters.enqueue_render(self.project, 5, "720p", .4, self.actor)
-        worker = RenderWorker(self.store, adapters)
-        worker.execute(self.store.claim_job())
-        job = self.store.one("SELECT * FROM jobs WHERE id=?", (job_id,))
-        self.assertEqual(job["state"], "succeeded", job["error"])
-        result = json.loads(job["result_json"])
-        self.assertTrue(Path(result["output"]).is_file())
-        self.assertTrue(result["verification"]["frames_ok"])
-        final = next(a for a in self.store.assets(self.project, latest=True) if a["kind"] == "final")
-        self.assertEqual(final["id"], result["asset_id"])
-        self.assertIn(job_id, final["note"])
-        bundle = self.store.export_bundle(self.project)
-        self.assertTrue(any(e["action"] == "render_succeeded" for e in bundle["events"]))
 
 
 if __name__ == "__main__":

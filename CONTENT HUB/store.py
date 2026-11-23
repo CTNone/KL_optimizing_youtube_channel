@@ -7,6 +7,7 @@ import sqlite3
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 TZ = timezone(timedelta(hours=7))
 STAGES = {
@@ -34,6 +35,26 @@ def required(value, label, limit=2000):
         raise DomainError(f"{label}: bắt buộc nhập, tối đa {limit} ký tự.")
     return value
 
+def youtube_video_id(value):
+    parsed = urlparse(str(value or "").strip())
+    host = (parsed.hostname or "").lower()
+    if host in ("youtu.be", "www.youtu.be"):
+        candidate = parsed.path.strip("/").split("/")[0]
+    elif host in ("youtube.com", "www.youtube.com", "m.youtube.com"):
+        path = parsed.path.strip("/").split("/")
+        if parsed.path == "/watch":
+            candidate = parse_qs(parsed.query).get("v", [""])[0]
+        elif len(path) >= 2 and path[0] in ("shorts", "embed", "live"):
+            candidate = path[1]
+        else:
+            candidate = ""
+    else:
+        candidate = ""
+    if (parsed.scheme != "https" or not candidate or len(candidate) > 20
+            or any(ch not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for ch in candidate)):
+        raise DomainError("URL YouTube không chứa mã video hợp lệ. Dán URL dạng https://youtu.be/<id> hoặc https://www.youtube.com/watch?v=<id>.")
+    return candidate
+
 def fingerprint(path: Path):
     path = path.resolve()
     if not path.is_file():
@@ -53,13 +74,12 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS channels (
  id TEXT PRIMARY KEY, name TEXT NOT NULL, niche TEXT NOT NULL DEFAULT '',
  url TEXT NOT NULL DEFAULT '', style TEXT NOT NULL DEFAULT '', archived INTEGER NOT NULL DEFAULT 0,
- created_at TEXT NOT NULL);
+ youtube_channel_id TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS projects (
  id TEXT PRIMARY KEY, channel_id TEXT NOT NULL REFERENCES channels(id), title TEXT NOT NULL,
  brief TEXT NOT NULL DEFAULT '', owner TEXT NOT NULL DEFAULT '', stage TEXT NOT NULL DEFAULT 'idea',
  due_date TEXT NOT NULL DEFAULT '', scheduled_at TEXT NOT NULL DEFAULT '', youtube_url TEXT NOT NULL DEFAULT '',
- album_id TEXT REFERENCES albums(id),
- music_project_id INTEGER REFERENCES music_projects(id),
+ published_at TEXT NOT NULL DEFAULT '', album_id TEXT REFERENCES albums(id),
  revision INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS project_channel ON projects(channel_id,stage);
 CREATE TABLE IF NOT EXISTS albums (
@@ -80,13 +100,6 @@ CREATE TABLE IF NOT EXISTS channel_assets (
 CREATE TABLE IF NOT EXISTS reviews (
  id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id), asset_id TEXT NOT NULL REFERENCES assets(id),
  decision TEXT NOT NULL, reviewer TEXT NOT NULL, checks_json TEXT NOT NULL, note TEXT NOT NULL, created_at TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS jobs (
- id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id), kind TEXT NOT NULL,
- state TEXT NOT NULL, payload_json TEXT NOT NULL, progress REAL NOT NULL DEFAULT 0,
- message TEXT NOT NULL DEFAULT '', error TEXT NOT NULL DEFAULT '', result_json TEXT NOT NULL DEFAULT '{}',
- retry_of TEXT REFERENCES jobs(id), created_at TEXT NOT NULL, started_at TEXT, finished_at TEXT);
-CREATE UNIQUE INDEX IF NOT EXISTS one_active_job ON jobs(project_id)
- WHERE state IN ('queued','running','cancelling');
 CREATE TABLE IF NOT EXISTS events (
  id INTEGER PRIMARY KEY AUTOINCREMENT, project_id TEXT REFERENCES projects(id),
  actor TEXT NOT NULL, action TEXT NOT NULL, detail_json TEXT NOT NULL, created_at TEXT NOT NULL);
@@ -96,6 +109,15 @@ CREATE TABLE IF NOT EXISTS metrics (
  source TEXT NOT NULL DEFAULT 'manual', average_view_duration REAL,
  average_view_percentage REAL, comments INTEGER, likes INTEGER, shares INTEGER,
  analytics_json TEXT NOT NULL DEFAULT '{}');
+CREATE TABLE IF NOT EXISTS channel_metrics (
+ id TEXT PRIMARY KEY, channel_id TEXT NOT NULL REFERENCES channels(id), recorded_at TEXT NOT NULL,
+ start_date TEXT NOT NULL DEFAULT '', data_through TEXT NOT NULL DEFAULT '',
+ views INTEGER NOT NULL DEFAULT 0, watch_minutes REAL NOT NULL DEFAULT 0,
+ impressions INTEGER NOT NULL DEFAULT 0, ctr REAL NOT NULL DEFAULT 0,
+ average_view_duration REAL, average_view_percentage REAL,
+ comments INTEGER, likes INTEGER, shares INTEGER,
+ analytics_json TEXT NOT NULL DEFAULT '{}');
+CREATE INDEX IF NOT EXISTS channel_metrics_channel ON channel_metrics(channel_id,recorded_at);
 CREATE TABLE IF NOT EXISTS music_tracks (
  id TEXT PRIMARY KEY, title TEXT NOT NULL, artist TEXT NOT NULL,
  status TEXT NOT NULL DEFAULT 'Chưa kiểm tra', credit TEXT NOT NULL DEFAULT '',
@@ -134,8 +156,11 @@ class Store:
             columns = {row[1] for row in db.execute("PRAGMA table_info(projects)")}
             if "album_id" not in columns:
                 db.execute("ALTER TABLE projects ADD COLUMN album_id TEXT REFERENCES albums(id)")
-            if "music_project_id" not in columns:
-                db.execute("ALTER TABLE projects ADD COLUMN music_project_id INTEGER REFERENCES music_projects(id)")
+            if "published_at" not in columns:
+                db.execute("ALTER TABLE projects ADD COLUMN published_at TEXT NOT NULL DEFAULT ''")
+            channel_columns = {row[1] for row in db.execute("PRAGMA table_info(channels)")}
+            if "youtube_channel_id" not in channel_columns:
+                db.execute("ALTER TABLE channels ADD COLUMN youtube_channel_id TEXT NOT NULL DEFAULT ''")
             metric_columns = {row[1] for row in db.execute("PRAGMA table_info(metrics)")}
             for name, declaration in (("average_view_duration", "REAL"),
                                       ("average_view_percentage", "REAL"),
@@ -145,7 +170,8 @@ class Store:
                 if name not in metric_columns:
                     db.execute(f"ALTER TABLE metrics ADD COLUMN {name} {declaration}")
             db.execute("CREATE INDEX IF NOT EXISTS project_album ON projects(album_id,stage)")
-            db.execute("PRAGMA user_version=5")
+            db.execute("CREATE UNIQUE INDEX IF NOT EXISTS channel_youtube_id ON channels(youtube_channel_id) WHERE youtube_channel_id<>''")
+            db.execute("PRAGMA user_version=6")
         if self.path.name == "content_hub.sqlite3" and self.path.parent.name == "data":
             self.import_legacy_music()
 
@@ -219,12 +245,11 @@ class Store:
     def channels(self):
         return self.rows("SELECT * FROM channels ORDER BY archived,name")
 
-    def music_projects(self):
-        return self.rows("""SELECT p.id,p.name,
-            count(DISTINCT CASE WHEN EXISTS(SELECT 1 FROM music_files f WHERE f.track_id=pt.track_id AND f.present=1)
-                                THEN pt.track_id END) AS track_count
-            FROM music_projects p LEFT JOIN music_project_tracks pt ON pt.project_id=p.id
-            GROUP BY p.id ORDER BY p.id DESC""")
+    def channel(self, channel_id):
+        row = self.one("SELECT * FROM channels WHERE id=?", (channel_id,))
+        if not row:
+            raise DomainError("Không tìm thấy kênh.")
+        return row
 
     def albums(self, channel_id="", query=""):
         sql = """SELECT a.*,c.name AS channel_name,
@@ -273,52 +298,26 @@ class Store:
                        (name, brief, target_date, now(), album_id))
             self.event(db, None, actor, "album_updated", {"album_id": album_id, "name": name})
 
-    def link_project_music_project(self, project_id, music_project_id, actor="Local operator"):
-        with self.transaction() as db:
-            project = db.execute("SELECT * FROM projects WHERE id=?", (project_id,)).fetchone()
-            if not project:
-                raise DomainError("Không tìm thấy video/mix.")
-            if project["music_project_id"] == music_project_id:
-                return
-            if project["stage"] in ("scheduled", "published"):
-                raise DomainError("Đưa video/mix về chỉnh sửa trước khi đổi playlist nhạc.")
-            if music_project_id is not None and not db.execute("SELECT 1 FROM music_projects WHERE id=?", (music_project_id,)).fetchone():
-                raise DomainError("Playlist Music Manager không còn tồn tại.")
-            stage = "editing" if project["stage"] in ("review", "ready") else project["stage"]
-            db.execute("UPDATE projects SET music_project_id=?,stage=?,scheduled_at='',revision=revision+1,updated_at=? WHERE id=?",
-                       (music_project_id, stage, now(), project_id))
-            self.event(db, project_id, actor, "video_music_playlist_linked", {
-                "music_project_id": music_project_id, "stage_before": project["stage"], "stage_after": stage})
-
-    def channel_music(self, channel_id):
-        return self.rows("""SELECT t.*,
-            (SELECT f.path FROM music_files f WHERE f.track_id=t.id AND f.present=1 ORDER BY f.path LIMIT 1) AS path
-            FROM music_channel_tracks ct JOIN music_tracks t ON t.id=ct.track_id
-            WHERE ct.channel_id=? AND EXISTS(SELECT 1 FROM music_files f WHERE f.track_id=t.id AND f.present=1)
-            ORDER BY t.title COLLATE NOCASE,t.artist""", (channel_id,))
-
-    def project_music(self, project_id):
-        project = self.project(project_id)
-        if project.get("music_project_id") is not None:
-            return self.rows("""SELECT t.*,
-                (SELECT f.path FROM music_files f WHERE f.track_id=t.id AND f.present=1 ORDER BY f.path LIMIT 1) AS path
-                FROM music_project_tracks pt JOIN music_tracks t ON t.id=pt.track_id
-                WHERE pt.project_id=? AND EXISTS(SELECT 1 FROM music_files f WHERE f.track_id=t.id AND f.present=1)
-                ORDER BY pt.position,t.title COLLATE NOCASE""", (project["music_project_id"],))
-        return self.channel_music(project["channel_id"])
-
-    def save_channel(self, name, niche="", url="", style="", channel_id=None, actor="Local operator", archived=False):
+    def save_channel(self, name, niche="", url="", style="", youtube_channel_id="", channel_id=None,
+                     actor="Local operator", archived=False):
         name = required(name, "Tên kênh", 150)
+        youtube_channel_id = str(youtube_channel_id or "").strip()
+        if youtube_channel_id and not (youtube_channel_id.startswith("UC") and len(youtube_channel_id) >= 20):
+            raise DomainError("YouTube channel ID phải bắt đầu bằng UC và có đủ ký tự.")
         channel_id = channel_id or uid()
-        with self.transaction() as db:
-            exists = db.execute("SELECT id FROM channels WHERE id=?", (channel_id,)).fetchone()
-            if exists:
-                db.execute("UPDATE channels SET name=?,niche=?,url=?,style=?,archived=? WHERE id=?",
-                           (name, niche, url, style, int(archived), channel_id))
-            else:
-                db.execute("INSERT INTO channels VALUES(?,?,?,?,?,?,?)",
-                           (channel_id, name, niche, url, style, int(archived), now()))
-            self.event(db, None, actor, "channel_saved", {"channel_id": channel_id, "name": name})
+        try:
+            with self.transaction() as db:
+                exists = db.execute("SELECT id FROM channels WHERE id=?", (channel_id,)).fetchone()
+                if exists:
+                    db.execute("UPDATE channels SET name=?,niche=?,url=?,style=?,archived=?,youtube_channel_id=? WHERE id=?",
+                               (name, niche, url, style, int(archived), youtube_channel_id, channel_id))
+                else:
+                    db.execute("INSERT INTO channels(id,name,niche,url,style,archived,youtube_channel_id,created_at) VALUES(?,?,?,?,?,?,?,?)",
+                               (channel_id, name, niche, url, style, int(archived), youtube_channel_id, now()))
+                self.event(db, None, actor, "channel_saved",
+                           {"channel_id": channel_id, "name": name, "youtube_channel_id": youtube_channel_id})
+        except sqlite3.IntegrityError as error:
+            raise DomainError("YouTube channel ID đã được gán cho kênh khác.") from error
         return channel_id
 
     def projects(self, channel_id="", query="", stage="", album_id=""):
@@ -334,7 +333,7 @@ class Store:
         return self.rows(sql + " ORDER BY p.updated_at DESC", args)
 
     def project(self, project_id):
-        row = self.one("SELECT p.*, c.name AS channel_name,c.style AS channel_style,a.name AS album_name,a.brief AS album_brief,a.target_date AS album_target_date,mp.name AS music_project_name FROM projects p JOIN channels c ON c.id=p.channel_id LEFT JOIN albums a ON a.id=p.album_id LEFT JOIN music_projects mp ON mp.id=p.music_project_id WHERE p.id=?", (project_id,))
+        row = self.one("SELECT p.*, c.name AS channel_name,c.style AS channel_style,c.youtube_channel_id AS youtube_channel_id,a.name AS album_name,a.brief AS album_brief,a.target_date AS album_target_date FROM projects p JOIN channels c ON c.id=p.channel_id LEFT JOIN albums a ON a.id=p.album_id WHERE p.id=?", (project_id,))
         if not row:
             raise DomainError("Không tìm thấy dự án.")
         return row
@@ -368,23 +367,45 @@ class Store:
                 raise DomainError("Dự án vừa được thay đổi. Làm mới trước khi lưu.")
             self.event(db, project_id, actor, "project_updated", {"title": title})
 
+    def update_youtube_url(self, project_id, revision, youtube_url, published_at="", actor="Local operator"):
+        youtube_url = str(youtube_url or "").strip()
+        if youtube_url:
+            youtube_video_id(youtube_url)
+        published_at = str(published_at or "").strip()
+        if published_at:
+            datetime.strptime(published_at, "%Y-%m-%d")
+        with self.transaction() as db:
+            project = db.execute("SELECT * FROM projects WHERE id=? AND revision=?", (project_id, revision)).fetchone()
+            if not project:
+                raise DomainError("Dự án vừa được thay đổi. Làm mới trước khi lưu.")
+            date = published_at or project["published_at"]
+            if youtube_url and not date:
+                date = now()[:10]
+            db.execute("UPDATE projects SET youtube_url=?,published_at=?,revision=revision+1,updated_at=? WHERE id=?",
+                       (youtube_url, date, now(), project_id))
+            self.event(db, project_id, actor, "youtube_url_updated",
+                       {"youtube_url": youtube_url, "published_at": date})
+
     def delete_project(self, project_id, actor):
         with self.transaction() as db:
-            project = db.execute("SELECT title FROM projects WHERE id=?", (project_id,)).fetchone()
+            project = db.execute("SELECT * FROM projects WHERE id=?", (project_id,)).fetchone()
             if not project:
                 raise DomainError("Không tìm thấy video/mix.")
-            job_ids = [row[0] for row in db.execute("SELECT id FROM jobs WHERE project_id=?", (project_id,))]
-            if job_ids:
-                placeholders = ",".join("?" for _ in job_ids)
-                db.execute(f"UPDATE jobs SET retry_of=NULL WHERE retry_of IN ({placeholders})", job_ids)
+            counts = {
+                "assets": db.execute("SELECT count(*) FROM assets WHERE project_id=?", (project_id,)).fetchone()[0],
+                "reviews": db.execute("SELECT count(*) FROM reviews WHERE project_id=?", (project_id,)).fetchone()[0],
+                "metrics": db.execute("SELECT count(*) FROM metrics WHERE project_id=?", (project_id,)).fetchone()[0],
+            }
+            snapshot = {key: project[key] for key in project.keys()
+                        if key not in ("music_project_id",)}
             db.execute("UPDATE events SET project_id=NULL WHERE project_id=?", (project_id,))
             db.execute("DELETE FROM metrics WHERE project_id=?", (project_id,))
             db.execute("DELETE FROM reviews WHERE project_id=?", (project_id,))
             db.execute("DELETE FROM assets WHERE project_id=?", (project_id,))
-            db.execute("DELETE FROM jobs WHERE project_id=?", (project_id,))
             db.execute("DELETE FROM projects WHERE id=?", (project_id,))
             self.event(db, None, actor, "video_project_deleted",
-                       {"project_id": project_id, "title": project["title"]})
+                       {"project_id": project_id, "title": project["title"],
+                        "project": snapshot, "counts": counts})
 
     def set_project_album(self, project_id, album_id, actor="Local operator"):
         with self.transaction() as db:
@@ -450,8 +471,13 @@ class Store:
             if old == stage:
                 return stage
             scheduled_at = project["scheduled_at"] if stage == "scheduled" else ""
-            db.execute("UPDATE projects SET stage=?,scheduled_at=?,revision=revision+1,updated_at=? WHERE id=?", (stage, scheduled_at, now(), project_id))
-            self.event(db, project_id, actor, "stage_changed", {"from": old, "to": stage, "manual": True})
+            published_at = project["published_at"]
+            if stage == "published" and not published_at:
+                published_at = now()[:10]
+            db.execute("UPDATE projects SET stage=?,scheduled_at=?,published_at=?,revision=revision+1,updated_at=? WHERE id=?",
+                       (stage, scheduled_at, published_at, now(), project_id))
+            self.event(db, project_id, actor, "stage_changed",
+                       {"from": old, "to": stage, "manual": True, "override": True})
         return stage
 
     def add_asset(self, project_id, kind, path, actor, slot="", note="", expected_fingerprint=None):
@@ -561,14 +587,14 @@ class Store:
             else:
                 scheduled_at = project["scheduled_at"]
             if target == "published":
-                from urllib.parse import urlparse
-                parsed = urlparse(youtube_url.strip())
-                if parsed.scheme != "https" or parsed.hostname not in ("youtube.com", "www.youtube.com", "youtu.be"):
-                    raise DomainError("Nhập URL HTTPS YouTube xác nhận video đã đăng.")
+                youtube_video_id(youtube_url)
             else:
                 youtube_url = project["youtube_url"]
-            db.execute("UPDATE projects SET stage=?,scheduled_at=?,youtube_url=?,revision=revision+1,updated_at=? WHERE id=?",
-                       (target, scheduled_at, youtube_url, now(), project_id))
+            published_at = project["published_at"]
+            if target == "published" and not published_at:
+                published_at = now()[:10]
+            db.execute("UPDATE projects SET stage=?,scheduled_at=?,youtube_url=?,published_at=?,revision=revision+1,updated_at=? WHERE id=?",
+                       (target, scheduled_at, youtube_url, published_at, now(), project_id))
             self.event(db, project_id, actor, "stage_changed", {"from": old, "to": target})
         return target
 
@@ -651,21 +677,93 @@ class Store:
                 "data_through": metrics.get("data_through")})
 
     def published_projects(self):
-        return self.rows("""SELECT p.*,c.name AS channel_name,a.name AS album_name
+        return self.rows("""SELECT p.*,c.name AS channel_name,c.youtube_channel_id AS youtube_channel_id,
+            a.name AS album_name
             FROM projects p JOIN channels c ON c.id=p.channel_id
             LEFT JOIN albums a ON a.id=p.album_id WHERE p.stage='published'
-            ORDER BY p.updated_at DESC""")
+            ORDER BY COALESCE(NULLIF(p.published_at,''),p.updated_at) DESC""")
 
     def metric_snapshots(self, project_id):
         return self.rows("SELECT * FROM metrics WHERE project_id=? ORDER BY recorded_at DESC,id DESC",
                          (project_id,))
 
-    def delete_analytics_data(self, actor):
+    def latest_metric(self, project_id):
+        return self.one("SELECT * FROM metrics WHERE project_id=? ORDER BY recorded_at DESC,id DESC LIMIT 1",
+                        (project_id,))
+
+    def save_channel_analytics_snapshot(self, channel_id, metrics, actor):
+        channel = self.one("SELECT * FROM channels WHERE id=?", (channel_id,))
+        if not channel:
+            raise DomainError("Không tìm thấy kênh.")
+        def value(name, default=None):
+            candidate = metrics.get(name)
+            return default if candidate is None else candidate
+        normalized = {
+            "views": value("views"), "watch_minutes": value("watch_minutes"),
+            "impressions": value("impressions"), "ctr": value("ctr"),
+            "average_view_duration": value("average_view_duration"),
+            "average_view_percentage": value("average_view_percentage"),
+            "comments": value("comments"), "likes": value("likes"), "shares": value("shares"),
+            "start_date": metrics.get("start_date"), "data_through": metrics.get("data_through"),
+            "ctr_start_date": metrics.get("ctr_start_date"),
+            "ctr_data_through": metrics.get("ctr_data_through"),
+            "ctr_warning": metrics.get("ctr_warning"),
+        }
         with self.transaction() as db:
-            count = db.execute("SELECT count(*) FROM metrics WHERE source='youtube_analytics'").fetchone()[0]
-            db.execute("DELETE FROM metrics WHERE source='youtube_analytics'")
-            db.execute("DELETE FROM events WHERE action='analytics_refreshed'")
-            self.event(db, None, actor, "analytics_data_deleted", {"snapshots_removed": count})
+            db.execute("""INSERT INTO channel_metrics(
+                id,channel_id,recorded_at,start_date,data_through,views,watch_minutes,impressions,ctr,
+                average_view_duration,average_view_percentage,comments,likes,shares,analytics_json
+                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (uid(), channel_id, now(), str(metrics.get("start_date") or ""),
+                 str(metrics.get("data_through") or ""), int(value("views", 0) or 0),
+                 float(value("watch_minutes", 0) or 0), int(value("impressions", 0) or 0),
+                 float(value("ctr", 0) or 0), value("average_view_duration"),
+                 value("average_view_percentage"), value("comments"), value("likes"),
+                 value("shares"), json.dumps(normalized, ensure_ascii=False)))
+            self.event(db, None, actor, "channel_analytics_refreshed",
+                       {"channel_id": channel_id, "data_through": metrics.get("data_through")})
+
+    def channel_metric_snapshots(self, channel_id):
+        return self.rows("""SELECT * FROM channel_metrics WHERE channel_id=?
+            ORDER BY recorded_at DESC,id DESC""", (channel_id,))
+
+    def latest_channel_metric(self, channel_id):
+        return self.one("""SELECT * FROM channel_metrics WHERE channel_id=?
+            ORDER BY recorded_at DESC,id DESC LIMIT 1""", (channel_id,))
+
+    def delete_analytics_data(self, actor, channel_id=""):
+        with self.transaction() as db:
+            if channel_id:
+                channel = db.execute("SELECT id FROM channels WHERE id=? OR youtube_channel_id=?",
+                                     (channel_id, channel_id)).fetchone()
+                if not channel:
+                    raise DomainError("Không tìm thấy kênh.")
+                channel_id = channel["id"]
+                project_ids = [row[0] for row in db.execute(
+                    "SELECT id FROM projects WHERE channel_id=?", (channel_id,))]
+                count = db.execute("""SELECT count(*) FROM metrics
+                    WHERE source='youtube_analytics' AND project_id IN
+                    (SELECT id FROM projects WHERE channel_id=?)""", (channel_id,)).fetchone()[0]
+                count += db.execute("SELECT count(*) FROM channel_metrics WHERE channel_id=?",
+                                    (channel_id,)).fetchone()[0]
+                db.execute("""DELETE FROM metrics WHERE source='youtube_analytics' AND project_id IN
+                    (SELECT id FROM projects WHERE channel_id=?)""", (channel_id,))
+                db.execute("DELETE FROM channel_metrics WHERE channel_id=?", (channel_id,))
+                if project_ids:
+                    marks = ",".join("?" for _ in project_ids)
+                    db.execute(f"DELETE FROM events WHERE action='analytics_refreshed' AND project_id IN ({marks})",
+                               project_ids)
+                db.execute("DELETE FROM events WHERE action='channel_analytics_refreshed' AND detail_json LIKE ?",
+                           ('%"channel_id": "' + channel_id + '"%',))
+                self.event(db, None, actor, "analytics_data_deleted",
+                           {"snapshots_removed": count, "channel_id": channel_id})
+            else:
+                count = db.execute("SELECT count(*) FROM metrics WHERE source='youtube_analytics'").fetchone()[0]
+                count += db.execute("SELECT count(*) FROM channel_metrics").fetchone()[0]
+                db.execute("DELETE FROM metrics WHERE source='youtube_analytics'")
+                db.execute("DELETE FROM channel_metrics")
+                db.execute("DELETE FROM events WHERE action IN ('analytics_refreshed','channel_analytics_refreshed')")
+                self.event(db, None, actor, "analytics_data_deleted", {"snapshots_removed": count})
         return count
 
     def backup(self, destination):
@@ -678,67 +776,8 @@ class Store:
         return self.rows("SELECT * FROM events" + (" WHERE project_id=?" if project_id else "") + " ORDER BY id DESC LIMIT 300",
                          (project_id,) if project_id else ())
 
-    def create_job(self, project_id, payload, actor, retry_of=None):
-        with self.transaction() as db:
-            project = db.execute("SELECT * FROM projects WHERE id=?", (project_id,)).fetchone()
-            if not project or project["stage"] != "editing":
-                raise DomainError("Dự án phải ở bước Dựng video để thêm render.")
-            job_id = uid()
-            try:
-                db.execute("INSERT INTO jobs(id,project_id,kind,state,payload_json,retry_of,created_at) VALUES(?,?,'render_loop','queued',?,?,?)",
-                           (job_id, project_id, json.dumps(payload, ensure_ascii=False), retry_of, now()))
-            except sqlite3.IntegrityError:
-                raise DomainError("Dự án đã có render đang chờ/chạy.")
-            self.event(db, project_id, actor, "render_queued", {"job_id": job_id, "retry_of": retry_of})
-        return job_id
-
-    def jobs(self):
-        return self.rows("SELECT j.*,p.title,c.name AS channel_name FROM jobs j JOIN projects p ON p.id=j.project_id JOIN channels c ON c.id=p.channel_id ORDER BY j.created_at DESC")
-
-    def claim_job(self):
-        with self.transaction() as db:
-            row = db.execute("SELECT * FROM jobs WHERE state='queued' ORDER BY created_at,rowid LIMIT 1").fetchone()
-            if not row:
-                return None
-            db.execute("UPDATE jobs SET state='running',started_at=?,message='Đang chuẩn bị' WHERE id=?", (now(), row["id"]))
-            self.event(db, row["project_id"], "render-worker", "render_started", {"job_id": row["id"]})
-            return dict(row)
-
-    def recover_jobs(self):
-        with self.transaction() as db:
-            rows = db.execute("SELECT * FROM jobs WHERE state IN ('running','cancelling')").fetchall()
-            for row in rows:
-                db.execute("UPDATE jobs SET state='interrupted',finished_at=?,message='Ứng dụng dừng khi tác vụ chưa kết thúc' WHERE id=?", (now(), row["id"]))
-                self.event(db, row["project_id"], "system", "render_interrupted", {"job_id": row["id"]})
-
-    def job_progress(self, job_id, progress, message):
-        with self.transaction() as db:
-            db.execute("UPDATE jobs SET progress=MAX(progress,?),message=? WHERE id=? AND state='running'", (min(99, max(0, progress)), message, job_id))
-
-    def finish_job(self, job_id, state, result=None, error=""):
-        if state not in ("succeeded", "failed", "cancelled"):
-            raise DomainError("Trạng thái kết thúc không hợp lệ.")
-        with self.transaction() as db:
-            row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
-            if not row or row["state"] not in ("running", "cancelling"):
-                raise DomainError("Tác vụ không còn chạy.")
-            db.execute("UPDATE jobs SET state=?,progress=?,message=?,error=?,result_json=?,finished_at=? WHERE id=?",
-                       (state, 100 if state == "succeeded" else row["progress"], state, error,
-                        json.dumps(result or {}, ensure_ascii=False), now(), job_id))
-            self.event(db, row["project_id"], "render-worker", "render_"+state, {"job_id": job_id, "error": error})
-
-    def cancel_job(self, job_id, actor):
-        with self.transaction() as db:
-            row = db.execute("SELECT * FROM jobs WHERE id=?", (job_id,)).fetchone()
-            if not row or row["state"] not in ("queued", "running", "cancelling"):
-                raise DomainError("Tác vụ không ở trạng thái có thể hủy.")
-            target = "cancelled" if row["state"] == "queued" else "cancelling"
-            db.execute("UPDATE jobs SET state=?,finished_at=? WHERE id=?", (target, now() if target == "cancelled" else None, job_id))
-            self.event(db, row["project_id"], actor, "render_cancel_requested", {"job_id": job_id})
-
     def export_bundle(self, project_id):
-        return {"schema_version": 1, "exported_at": now(), "project": self.project(project_id),
+        return {"schema_version": 2, "exported_at": now(), "project": self.project(project_id),
                 "assets": self.assets(project_id), "events": self.events(project_id),
                 "reviews": self.rows("SELECT * FROM reviews WHERE project_id=?", (project_id,)),
-                "metrics": self.rows("SELECT * FROM metrics WHERE project_id=? AND source!='youtube_analytics' ORDER BY recorded_at", (project_id,)),
-                "jobs": [j for j in self.jobs() if j["project_id"] == project_id]}
+                "metrics": self.rows("SELECT * FROM metrics WHERE project_id=? AND source!='youtube_analytics' ORDER BY recorded_at", (project_id,))}

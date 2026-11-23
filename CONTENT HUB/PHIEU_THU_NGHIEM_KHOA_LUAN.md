@@ -19,7 +19,7 @@ thực nghiệm.
 | Phiên bản/commit của Hub |  |
 | Cách chạy | Source / EXE |
 | Máy, CPU, RAM, ổ lưu trữ |  |
-| Windows/Python/FFmpeg |  |
+| Windows/Python |  |
 | Database và bộ dữ liệu |  |
 | Ghi chú điều kiện khác |  |
 
@@ -28,7 +28,7 @@ thực nghiệm.
 - Dùng cùng một bộ brief, file nguồn và kịch bản cho quy trình hiện tại và Hub.
 - Dùng cùng người thực hiện và máy tính nếu có thể; nếu khác, ghi rõ khác biệt.
 - Đo riêng **thời gian thao tác chủ động** và **thời gian chờ máy/dịch vụ**. Không cộng
-  thời gian render vào thời gian thao tác quản trị.
+  thời gian chờ YouTube xử lý báo cáo vào thời gian thao tác quản trị.
 - Ghi mọi lần làm lại, lỗi và lần chuyển công cụ; không bỏ lượt thất bại khỏi mẫu.
 - Giữ dữ liệu thử nghiệm tách database sản xuất. Phân biệt dữ liệu tổng hợp với dữ liệu
   thật trong ảnh chụp, log và báo cáo.
@@ -42,7 +42,7 @@ Mỗi hàng là một lượt thực hiện một tác vụ bằng một phươn
 |  | Tìm trạng thái và đúng nguồn của video |  |  |  |  |  |  |  |  |  |  |
 |  | Bàn giao video sang bước sản xuất |  |  |  |  |  |  |  |  |  |  |
 |  | QC bản thành phẩm và xác nhận phiên bản |  |  |  |  |  |  |  |  |  |  |
-|  | Tìm nguyên nhân render lỗi và chuẩn bị thử lại |  |  |  |  |  |  |  |  |  |  |
+|  | Nhập link/ngày đăng và làm mới Analytics |  |  |  |  |  |  |  |  |  |  |
 
 ## 5. Kiểm tra tính đúng đắn và phục hồi
 
@@ -51,10 +51,10 @@ Mỗi hàng là một lượt thực hiện một tác vụ bằng một phươn
 | V1 | Tạo video gắn vào album thuộc cùng kênh | Video hiện dưới đúng kênh và album |  |  |  |
 | V2 | Thử chuyển bước khi thiếu brief/tài nguyên bắt buộc | Từ chối chuyển; trạng thái và audit không đổi dở dang |  |  |  |
 | V3 | Thay file thành phẩm sau khi QC duyệt | QC cũ không còn hợp lệ; cần duyệt lại |  |  |  |
-| V4 | File nguồn render bị sửa hoặc thiếu | Job dừng trước khi coi kết quả là thành công; nêu được lỗi |  |  |  |
-| V5 | Hủy job hoặc khởi động lại khi job đang chạy | Trạng thái thể hiện đúng; không tự nhận thành công |  |  |  |
-| V6 | Thử lại job lỗi/gián đoạn | Job mới liên kết job cũ và chụp nguồn hiện tại |  |  |  |
-| V7 | Sao lưu database demo và đối chiếu hồ sơ xuất | Dữ liệu chính/asset/job/QC/audit khớp phạm vi đã xuất |  |  |  |
+| V4 | Đổi Bước bằng menu chuột phải | Ghi audit `manual`/`override`; gate tuần tự không bị ảnh hưởng |  |  |  |
+| V5 | Kết nối/ngắt một kênh trong Analytics | Token/snapshot chỉ thuộc kênh đó; kênh khác giữ nguyên |  |  |  |
+| V6 | Làm mới video/kênh bằng tài khoản thật | Dùng đúng `channel==id`, đúng ngày đăng; CTR trễ được báo rõ |  |  |  |
+| V7 | Sao lưu database demo và đối chiếu hồ sơ xuất | Dữ liệu chính/asset/QC/audit khớp phạm vi đã xuất |  |  |  |
 
 Ghi chú khi một ca không đạt:
 
@@ -84,7 +84,7 @@ Số kênh / album / video đã thử:
 Số lượt theo từng phương pháp:
 Trung vị thời gian thao tác thủ công:
 Trung vị thời gian thao tác Hub:
-Thời gian chờ render riêng:
+Thời gian chờ báo cáo/dịch vụ riêng:
 Số lần chuyển công cụ:
 Số lỗi / số lần làm lại:
 Số trường hợp gắn nhầm tài nguyên:
@@ -96,7 +96,7 @@ Những giới hạn làm ảnh hưởng phép so sánh:
 
 - Mã/phiên bản phần mềm và cấu hình máy.
 - Cùng bộ dữ liệu đầu vào cho hai phương pháp.
-- Bảng ghi lượt chạy, log render, ảnh chụp thao tác và hồ sơ JSON đã xuất.
+- Bảng ghi lượt chạy, log/ảnh chụp thao tác, hồ sơ JSON đã xuất và snapshot Analytics.
 - Database demo trước/sau nếu cần chứng minh trạng thái; không đưa database sản xuất
   hoặc thông tin tài khoản vào phụ lục công khai.
 - Ghi rõ ca nào dùng dữ liệu tổng hợp, ca nào dùng dữ liệu thật đã được phép sử dụng.

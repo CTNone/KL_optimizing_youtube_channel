@@ -28,16 +28,16 @@
 
 Content Hub là ứng dụng desktop cục bộ giúp **một người vận hành quản lý quy trình sản
 xuất trên nhiều kênh YouTube**. Đơn vị quản trị là kênh → album/đợt phát hành → video/mix.
-Mỗi video có brief, tài nguyên, lịch sử, kiểm duyệt, render job và trạng thái xuất bản
+Mỗi video có brief, tài nguyên, lịch sử, kiểm duyệt và trạng thái xuất bản
 riêng. Hệ thống quản trị và điều phối công việc; các công cụ hiện có có thể được mở theo
-ngữ cảnh để thực hiện một số bước sản xuất.
+ngữ cảnh để thực hiện một số bước sản xuất. Hub không render video.
 
 ## Mục tiêu khóa luận
 
 1. Tập trung trạng thái và dữ liệu sản xuất của nhiều kênh vào một nơi.
 2. Ngăn chuyển bước khi thiếu điều kiện nghiệp vụ.
 3. Truy được tài nguyên/phiên bản đã dùng và bản thành phẩm đã duyệt.
-4. Theo dõi render job, lỗi và thử lại an toàn sau gián đoạn.
+4. Đổi bước linh hoạt có audit và theo dõi hiệu suất sau đăng.
 5. Đánh giá hệ thống bằng tính đúng đắn quy trình, khả năng truy vết và thời gian thao tác.
 
 ## Phạm vi bản bảo vệ
@@ -47,7 +47,7 @@ ngữ cảnh để thực hiện một số bước sản xuất.
 | Danh mục | Kênh, album, video/mix; lọc, brief, deadline | Tài khoản, nhóm người dùng, RBAC, cộng tác qua mạng |
 | Quy trình | Trạng thái có điều kiện, lịch sử thao tác, yêu cầu sửa | Workflow builder tùy biến hoặc nhiều loại quy trình |
 | Tài nguyên | Nhập tham chiếu file, loại/version/hash; liên kết đúng video | Kho lưu trữ media bất biến hoặc quản lý quyền nội dung tự động |
-| Sản xuất | Handoff và mở công cụ hiện có; hàng đợi render tích hợp | Tự sinh ảnh/video, chatbot Agent, tự động hóa thao tác dịch vụ ngoài |
+| Sản xuất | Handoff và mở công cụ hiện có | Tự sinh ảnh/video, chatbot Agent, render/FFmpeg trong Hub, tự động hóa thao tác dịch vụ ngoài |
 | Kiểm duyệt/xuất bản | QC theo đúng bản thành phẩm; lịch nội bộ; xác nhận URL thủ công | Tự đăng hoặc tự lên lịch YouTube |
 | Báo cáo | Audit, xuất hồ sơ, theo dõi analytics sau đăng qua OAuth chỉ đọc, lưu snapshot cục bộ | AI phân tích/dự báo, SEO AI, kế hoạch tuần tự động |
 
@@ -59,11 +59,11 @@ ngữ cảnh để thực hiện một số bước sản xuất.
 | MVP-02 | Quản lý brief và chuyển bước | Thiếu điều kiện thì từ chối chuyển bước, dữ liệu vẫn nhất quán |
 | MVP-03 | Nhập và truy vết tài nguyên | Xem được loại, phiên bản, đường dẫn và hash theo video |
 | MVP-04 | Bàn giao sang công cụ sản xuất | Handoff giữ đúng định danh video và danh sách tài nguyên |
-| MVP-05 | Tạo và theo dõi render job | Job có trạng thái, log, đầu ra, lỗi và liên kết dự án |
+| MVP-05 | Đổi bước tay có audit | Ghi `manual`/`override`; gate tuần tự vẫn kiểm tra điều kiện |
 | MVP-06 | QC video thành phẩm | Quyết định duyệt gắn với đúng asset; thay file làm QC cũ mất hiệu lực |
 | MVP-07 | Lịch nội bộ và xác nhận đã đăng | Chỉ chuyển khi đủ QC; lịch/URL được ghi rõ là do người dùng nhập |
-| MVP-08 | Phục hồi và xuất hồ sơ | Hủy/lỗi/retry/khởi động lại có thể truy vết; xuất được lịch sử dự án |
-| MVP-09 | Theo dõi video sau đăng | OAuth chỉ đọc; snapshot lượt xem, CTR, watch time, AVD, tỷ lệ xem trung bình, comment, like và share; xem lịch sử snapshot |
+| MVP-08 | Phục hồi và xuất hồ sơ | Khôi phục backup, đối chiếu hồ sơ; audit truy vết được |
+| MVP-09 | Theo dõi video/kênh sau đăng | OAuth riêng từng kênh; snapshot lượt xem, CTR, watch time, AVD, tỷ lệ xem, comment, like, share; xem lịch sử và so sánh video |
 
 ## Quy tắc phạm vi
 
@@ -87,7 +87,7 @@ quyền sử dụng hoặc tính đúng đắn nội dung.
 Quy trình sản xuất nội dung cho nhiều kênh thường đi qua nhiều công cụ và người thực
 hiện. Thông tin về brief, file nguồn, phiên bản thành phẩm, trạng thái kiểm duyệt và
 lịch đăng vì vậy dễ bị lưu rời rạc. Người vận hành khó trả lời nhanh video đang ở bước
-nào, đang dùng đúng nguồn nào, bản nào đã được duyệt và cần xử lý gì khi render lỗi.
+nào, đang dùng đúng nguồn nào, bản nào đã được duyệt và cần xử lý gì khi phải làm lại.
 
 Khóa luận tập trung giải quyết vấn đề quản trị và truy vết đó bằng một ứng dụng desktop
 cục bộ. Nghiên cứu thị trường, tạo nội dung, SEO và xuất bản vẫn có thể diễn ra trên
@@ -102,8 +102,8 @@ Hệ thống được xây dựng nhằm:
 1. Quản lý tập trung nhiều kênh, album phát hành và video/mix.
 2. Chuẩn hóa và kiểm soát trạng thái sản xuất theo điều kiện nghiệp vụ.
 3. Truy vết brief, tài nguyên, phiên bản, QC và lịch sử của từng video.
-4. Điều phối render job, ghi nhận lỗi và hỗ trợ thử lại/phục hồi.
-5. Tạo hồ sơ để kiểm tra, bàn giao và đánh giá quy trình.
+4. Cho phép đổi bước linh hoạt có audit, đồng thời giữ gate tuần tự.
+5. Tạo hồ sơ để kiểm tra, bàn giao và đánh giá quy trình; theo dõi hiệu suất sau đăng.
 
 Các chức năng AI, nghiên cứu thị trường, SEO tự động, tự đăng và phân tích chiến lược
 không phải mục tiêu nghiệm thu của MVP hiện hành.
@@ -120,10 +120,10 @@ Hệ thống được chia thành các phân hệ chính:
 | M1 | Hoạt động kênh và tương tác cộng đồng | Ngoài phạm vi khóa luận |
 | M2 | Nghiên cứu thị trường | Công cụ ngoài; chỉ bàn giao/đính kèm tài liệu khi cần |
 | M3 | Sinh thumbnail bằng AI | Công cụ ngoài; Hub quản lý tài nguyên đã chọn |
-| M4 | Workflow sản xuất, render và QC video | MVP — điều phối; một số bước do người dùng/công cụ ngoài thực hiện |
+| M4 | Workflow sản xuất và QC video | MVP — quy tắc, audit, tài nguyên; biên tập do CapCut/công cụ ngoài thực hiện |
 | M5 | SEO và chấm điểm metadata | Ngoài phạm vi khóa luận |
 | M6 | Lịch nội bộ và xác nhận đã đăng | MVP — nhập thủ công, không đồng bộ YouTube |
-| M7 | Audit, xuất hồ sơ và theo dõi analytics sau đăng | MVP giới hạn; chỉ số lấy theo yêu cầu, CTR dùng báo cáo hằng ngày có độ trễ |
+| M7 | Audit, xuất hồ sơ và theo dõi analytics sau đăng | MVP giới hạn; 5 kênh, token riêng từng kênh, snapshot theo yêu cầu, CTR dùng báo cáo hằng ngày có độ trễ |
 
 ---
 
@@ -142,7 +142,7 @@ VIDEO / MIX
    ↓
 BRIEF + ASSETS
    ↓
-RENDER JOB
+CAPCUT / MANUAL FINAL IMPORT
    ↓
 VERSIONED QC
    ↓
@@ -162,8 +162,8 @@ luồng nghiệm thu MVP.
 
 - Danh mục kênh/album/video, brief và trạng thái.
 - Tài nguyên có định danh và dấu vết phiên bản.
-- Điều kiện chuyển bước, audit, QC và lịch nội bộ.
-- Hàng đợi render cùng hồ sơ lỗi/phục hồi.
+- Điều kiện chuyển bước, audit (kể cả đổi bước tay), QC và lịch nội bộ.
+- Handoff, backup và hồ sơ lỗi/ngoại lệ.
 
 ### B. Thực thi bên ngoài — ngoài phạm vi sản phẩm
 
@@ -927,7 +927,7 @@ Kiểm duyệt thủ công video.
 
 #### Technical
 - Resolution đúng.
-- Không lỗi render.
+- Không lỗi gắn nhầm tài nguyên.
 - Không black frame.
 - Audio hoạt động.
 - Duration hợp lệ.
@@ -1202,35 +1202,30 @@ Ghi nhận trạng thái publish khi người dùng đăng video thủ công.
 ## UC28 – Thu thập Analytics
 
 ### Actor
-System, YouTube.
+Người vận hành, YouTube API.
 
 ### Mục tiêu
-Thu thập dữ liệu hiệu suất theo thời gian.
+Lưu một snapshot hiệu suất của video/kênh khi người vận hành yêu cầu làm mới.
 
-### Mốc snapshot đề xuất
-- 1 giờ.
-- 6 giờ.
-- 24 giờ.
-- 3 ngày.
-- 7 ngày.
-- 14 ngày.
-- 28 ngày.
+### Cách thu thập hiện hành
+- Người vận hành bấm **Làm mới video** hoặc **Làm mới kênh**; MVP không có scheduler
+  1 giờ/6 giờ/24 giờ.
+- Mỗi lần làm mới lưu một snapshot với `recorded_at`; lịch sử nhiều lần cho phép so sánh.
+- CTR/impressions lấy từ YouTube Reporting `channel_reach_basic_a1`, cửa sổ tối đa 28 ngày
+  gần nhất có báo cáo; báo cáo có thể trễ 1-2 ngày.
+- Snapshot kênh dùng bảng `channel_metrics`; snapshot video dùng bảng `metrics` với
+  `source='youtube_analytics'`.
 
-### Metrics
+### Metrics hiện hành
 - Views.
-- Impressions.
-- CTR.
-- Watch Time.
+- Watch time (`estimatedMinutesWatched`).
 - Average View Duration.
-- Retention.
-- Subscribers Gained.
-- Likes.
-- Comments.
-- Traffic Sources.
-- Browse contribution.
-- Suggested contribution.
-- Search contribution.
-- Revenue nếu có quyền truy cập.
+- Average View Percentage.
+- Likes, Comments, Shares.
+- Impressions và CTR từ Reporting API.
+
+Retention, subscribers gained, traffic sources, browse/suggested/search contribution và
+revenue chưa triển khai trong MVP.
 
 ---
 
@@ -1494,45 +1489,38 @@ CHANNEL
 
 # 19. Thiết kế Analytics Snapshot
 
-Không nên lưu:
+MVP không lưu chỉ số trực tiếp trên project. Mỗi lần làm mới tạo một snapshot:
 
 ```text
-video.views = 50000
-video.ctr = 5%
+metrics
+  project_id
+  recorded_at
+  views
+  watch_minutes
+  impressions
+  ctr              # tỉ lệ 0-1 trong analytics_json; cột legacy lưu phần trăm
+  source           # youtube_analytics hoặc manual
+  analytics_json   # AVD, average view %, comments, likes, shares, mốc dữ liệu
+
+channel_metrics
+  channel_id
+  recorded_at
+  start_date
+  data_through
+  views, watch_minutes, impressions, ctr
+  analytics_json
 ```
 
-Nên lưu theo thời điểm:
+Ví dụ lịch sử video:
 
-```text
-VIDEO_METRIC_SNAPSHOT
-
-video_id
-snapshot_at
-views
-impressions
-ctr
-watch_time
-average_view_duration
-retention
-likes
-comments
-subscriber_gain
-traffic_source
-```
-
-Ví dụ:
-
-| Time | Views | CTR |
+| Thời điểm ghi | Views | CTR |
 |---|---:|---:|
-| 09/09 09:00 | 10,000 | 6.1% |
-| 10/09 09:00 | 28,000 | 5.8% |
-| 11/09 09:00 | 52,000 | 5.4% |
+| 09/09 09:00 | 10.000 | 6,1% |
+| 10/09 09:00 | 28.000 | 5,8% |
+| 11/09 09:00 | 52.000 | 5,4% |
 
-Nhờ đó hệ thống có thể tính:
-- Views Velocity.
-- CTR trend.
-- Growth rate.
-- Performance Index.
+Snapshot theo thời điểm cho phép xem lịch sử và so sánh giữa các lần làm mới. MVP chưa
+tính Views Velocity, Performance Index hoặc dự báo; các chỉ số đó là hướng mở rộng.
 
 ---
 
@@ -1542,7 +1530,7 @@ Nhờ đó hệ thống có thể tính:
 
 - Dashboard tải trong thời gian hợp lý.
 - Hệ thống hỗ trợ nhiều channel.
-- Analytics chạy bằng background job.
+- Analytics chỉ chạy khi người dùng yêu cầu làm mới.
 - AI request không làm khóa giao diện.
 
 ---
@@ -1681,23 +1669,21 @@ Trước khi nghiệm thu, cần chứng minh tối thiểu các tình huống s
 2. Thử chuyển bước khi thiếu điều kiện và xác nhận hệ thống từ chối mà không cập nhật
    dở dang.
 3. Duyệt một video thành phẩm, thay file sau duyệt và xác nhận cần QC lại.
-4. Chạy render ngắn thành công; ghi nhận ít nhất một trường hợp lỗi nguồn, thử lại và
-   phục hồi sau khi đóng/mở ứng dụng.
-5. Đối chiếu hồ sơ xuất/backup với dữ liệu demo và ghi lại phiên bản phần mềm, dữ liệu
-   đầu vào, log, kết quả và giới hạn thử nghiệm.
+4. Đổi Bước bằng menu chuột phải và xác nhận audit ghi `manual`/`override`, không phá gate tuần tự.
+5. Nhập link/ngày đăng, làm mới Analytics cho một kênh; xác nhận snapshot video/kênh và việc ngắt kết nối không ảnh hưởng kênh khác.
+6. Đối chiếu hồ sơ xuất/backup với dữ liệu demo và ghi lại phiên bản phần mềm, dữ liệu đầu vào, log, kết quả và giới hạn thử nghiệm.
 
 Các số đo hiệu quả tập trung vào thời gian tìm trạng thái/nguồn, số lần chuyển công cụ,
-lỗi gắn nhầm tài nguyên và khả năng truy nguyên job. Thời gian thao tác người dùng được
-tách riêng khỏi thời gian máy render. Không dùng lượt xem hoặc doanh thu để quy kết tác
-động nhân quả của hệ thống.
+lỗi gắn nhầm tài nguyên và khả năng truy nguyên audit. Thời gian thao tác người dùng được
+tách riêng khỏi thời gian chờ dịch vụ/báo cáo YouTube. Không dùng lượt xem hoặc doanh thu
+để quy kết tác động nhân quả của hệ thống.
 
 # 24. Hướng mở rộng sau bảo vệ
 
 Các hạng mục sau là hướng phát triển, không thuộc tiêu chí nghiệm thu MVP:
 
 - Nhiều người dùng, xác thực và phân quyền theo vai trò/kênh.
-- YouTube API để đồng bộ metadata, lịch đăng hoặc analytics sau khi xác thực nhu cầu và
-  quyền truy cập.
+- YouTube Data API để đồng bộ metadata, lịch đăng hoặc tự đăng sau khi xác thực nhu cầu và quyền truy cập.
 - Báo cáo tổng hợp theo kênh từ snapshot có nguồn gốc rõ ràng.
 - Adapter cho công cụ nghiên cứu, tạo nội dung hoặc nhà cung cấp khác.
 - Tự động hóa bàn giao hai chiều bằng `project_id` và hợp đồng dữ liệu ổn định.
@@ -1709,10 +1695,11 @@ microservices hoặc xây framework plugin trước khi có nhu cầu thực t�
 # 25. Kết luận
 
 Đóng góp của khóa luận là một hệ thống quản trị quy trình sản xuất nội dung đa kênh với
-mô hình dữ liệu phân cấp kênh → album → video/mix, các điều kiện chuyển bước, truy vết
-tài nguyên/phiên bản, kiểm duyệt gắn với bản thành phẩm, điều phối render job và phục
-hồi sau lỗi. Các dịch vụ nghiên cứu, tạo nội dung và xuất bản được xem là công cụ ngoài;
-Hub tập trung vào tính nhất quán, khả năng quan sát và truy nguyên của quy trình.
+mô hình dữ liệu phân cấp kênh → album → video/mix, điều kiện chuyển bước, truy vết
+tài nguyên/phiên bản, kiểm duyệt gắn với bản thành phẩm, audit đổi bước linh hoạt và
+snapshot hiệu suất sau đăng theo từng kênh. Các dịch vụ nghiên cứu, tạo nội dung và xuất
+bản được xem là công cụ ngoài; Hub tập trung vào tính nhất quán, khả năng quan sát và
+truy nguyên của quy trình.
 
 Khả năng mở rộng được giữ ở ranh giới adapter, định danh dữ liệu và migration schema.
 Những chức năng như RBAC, đồng bộ YouTube API và phân tích AI có thể bổ sung sau khi có

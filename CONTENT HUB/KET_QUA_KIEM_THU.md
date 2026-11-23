@@ -1,73 +1,54 @@
 # Kết quả kiểm thử bản MVP
 
-Ngày: 16/10/2026. Môi trường: Windows, Python 3.13, SQLite, Tk 8.6 và FFmpeg có sẵn
-trong editor. Không gửi yêu cầu tạo ảnh/video hoặc gọi API YouTube trong đợt này.
+Ngày: 23/11/2026. Môi trường: Windows, Python 3.13, SQLite và Tk 8.6. Không gửi yêu cầu
+tạo ảnh/video, không gọi Google Flow và không gọi YouTube API trong đợt này.
 
-> **Trạng thái bằng chứng:** đây là báo cáo snapshot của bản được kiểm tra ngày
-> 16/10/2026, không phải xác nhận cho toàn bộ working tree hiện tại. Các thay đổi sau
-> ngày này và bản phát hành dùng để bảo vệ cần được kiểm tra lại theo checklist ở
-> `KE_HOACH_KHOA_LUAN.md`. Không dùng kết quả dưới đây để khẳng định bản hiện tại đã qua
-> nghiệm thu.
+> **Trạng thái bằng chứng:** đây là báo cáo cho working tree ngày 23/11/2026. Analytics
+> mới được kiểm thử ở tầng dữ liệu/UI, chưa chạy OAuth hoặc API bằng credential thật.
 
 ## Đã đạt
 
-- **14 kiểm thử tự động**: tách dữ liệu kênh, lưu trữ kênh, gate workflow, optimistic
-  revision, asset version/dedup, QC đầy đủ, file bị đổi ngoài hệ thống, yêu cầu sửa,
-  lịch đăng/URL, metric validation, job uniqueness/recovery/cancel, backup nhất quán,
-  process lock và render tích hợp thực.
-- Render tích hợp dùng clip tổng hợp 24 fps, chuẩn hóa 30 fps, xuất 720p và đăng ký
-  đúng asset/job/provenance trong SQLite.
-- Khởi tạo UI source và EXE: 6 tab, tại thời điểm báo cáo đọc được hai kênh/hai dự án demo, tìm đủ các
-  adapter. Cửa sổ tự đặt 1400×774 trên màn hình 1536×864.
-- **Chính bản EXE** tạo clip tổng hợp và render thành công 6.0 giây, H.264,
-  1280×720, 180 khung hình, không tiếng theo chủ đích. Engine/FFmpeg lấy từ gói EXE.
-- Database sản xuất không được seed dữ liệu demo; release smoke dùng database riêng.
+- Chạy `py -m unittest test_hub -v`: **18/18 ca đạt**.
+- Phạm vi kiểm thử: tách dữ liệu kênh; lưu trữ kênh; gate workflow; đổi Bước tay có audit;
+  optimistic revision; asset version/dedup; QC đầy đủ; file bị đổi ngoài hệ thống; yêu cầu
+  sửa; lịch đăng/URL; `published_at`; metric validation; backup nhất quán; process lock;
+  YouTube channel ID duy nhất/hợp lệ; snapshot kênh và xóa Analytics theo kênh; snapshot
+  project trước khi xóa; seed demo đa kênh/lặp an toàn; tính CTR có trọng số impressions.
+- Self-check UI source trên database sản xuất: **UI OK, 5 tab, 3 kênh, 0 project**; adapter
+  NCTT và Music Manager tìm thấy. Cửa sổ 1400×774 trên màn hình 1536×864.
+- Self-check UI demo trên database mới: **UI OK, 5 tab, 3 kênh, 12 video/mix**.
+- Đã build EXE `dist/YouTubeContentHub/YouTubeContentHub.exe` và self-check UI qua EXE:
+  5 tab, 3 kênh, 0 project; `build.bat` đặt `TCL_LIBRARY`/`TK_LIBRARY` để đóng gói Tk đúng.
+- Database demo mới có 3 kênh, 6 album và 12 video/mix; seed chạy hai lần vẫn không nhân
+  đôi dữ liệu.
+- Bỏ render/Tool Edit/FFmpeg khỏi Hub; `services.py`, `build.bat` và `.spec` không còn
+  tham chiếu engine/FFmpeg. `smoke.py` đã xóa.
+- Bỏ playlist nhạc riêng từng video khỏi Hub; dữ liệu `music_*` và Music Manager được giữ.
+- Dữ liệu test production đã được xóa và backup trước khi xóa:
+  `OUTPUT TỔNG/Content Hub/Backups/content_hub_before_cleanup_20261123_185206.sqlite3`.
+  Backup demo cũ: `demo_before_cleanup_20261123_185206.sqlite3` trong cùng thư mục.
 
-Các báo cáo máy đọc nằm tại `data/ui_selfcheck.json`, `data/packaged_ui_check.json`
-và `data/packaged_render_check.json`; media của release smoke nằm dưới
-`data/release_checks/`.
+Báo cáo máy đọc: `OUTPUT TỔNG/Content Hub/selfcheck.json`,
+`OUTPUT TỔNG/Content Hub/demo_selfcheck.json`, `OUTPUT TỔNG/Content Hub/exe_selfcheck.json`
+và `OUTPUT TỔNG/Content Hub/exe_demo_selfcheck.json`.
 
 ## Chưa có bằng chứng đầy đủ
 
-- Chụp hình kiểm tra giao diện qua computer-use bị lỗi `FrameArrived timed out` và
-  `window capture timed out` sau lần phục hồi. Vì vậy chưa xác nhận bố cục bằng ảnh
-  hoặc toàn bộ thao tác click xuyên suốt; không đồng nhất UI self-check với visual QA.
+- Chưa chạy OAuth/YouTube Analytics/Reporting với credential thật; chưa xác nhận quyền
+  của 5 kênh, việc tạo reporting job, độ trễ báo cáo và đơn vị CTR trong CSV thật.
 - Chưa đo so sánh thời gian vận hành thủ công và Hub trên tập dự án thực.
-- Chưa kiểm chứng một chu kỳ sản xuất mới trên tài khoản Google Flow/YouTube thật.
-  Bộ điều khiển Flow hiện có được mở qua launcher, không bị sửa trong đợt này.
-- Hub render bằng CPU; chưa kiểm tra các cấu hình GPU từ Hub.
-
-## Kiểm chứng bổ sung ngày 04/11/2026
-
-- Chạy `py -m unittest test_hub -v`: **15/15 ca đạt** trên working tree hiện tại; gồm
-  kiểm tra seed demo đa kênh/lặp an toàn và render tích hợp bằng clip tổng hợp.
-- Self-check UI source trên database tạm sạch: **6 tab, 3 kênh, 6 album, 12 video/mix**;
-  mở được dự án demo. Database demo có sẵn không bị sửa.
-- Build QA bằng PyInstaller 6.22.3 vào `dist/archive/qa_20261104_tk`; Tcl/Tk được thu thập đầy
-  đủ sau khi chỉ định `TCL_LIBRARY`/`TK_LIBRARY`. Các bản build lịch sử hiện được lưu
-  trong `dist/archive/`.
-- Packaged UI self-check: `ui: OK`, **6 tab, 3 kênh, 12 video/mix**, cửa sổ 1400×774
-  trên màn hình 1536×864. Chạy trong workspace giả lập cô lập nên adapter ngoài được báo
-  không khả dụng; self-check này chỉ chứng minh Tk/UI và dữ liệu demo đóng gói.
-- Packaged smoke render thành công: 6 giây, H.264, 1280×720, 180 khung hình; kiểm tra
-  duration/resolution/audio/frames đều đạt. Báo cáo: `data/packaged_render_qa_20261104.json`.
-- `git diff --check` trên các tài liệu và mã đã sửa không báo lỗi whitespace.
-- Hai lần chạy trong sandbox không vào được bước tạo SQLite ở thư mục tạm. Sau khi chạy
-  cùng bộ lệnh với quyền ghi tạm phù hợp, toàn bộ 15 ca hoàn tất thành công.
-- Không gọi Google Flow, YouTube API hoặc tạo nội dung trên tài khoản thật.
-- Chưa có visual QA bằng ảnh/chụp thao tác. Bản EXE QA đã build/self-check, nhưng chưa
-  phát hành thay thế EXE hiện có; cần kiểm tra adapter trong workspace thật. Database demo
-  hiện có là dữ liệu cũ (2 kênh, 0 album, 2 dự án); không sửa database này. Ca seed mới
-  dùng database tạm sạch, cho kết quả 3 kênh, 6 album và 12 video/mix.
+- Chưa chụp hình/visual QA toàn bộ thao tác click xuyên suốt.
+- Chưa đăng video thật hoặc kiểm chứng liên kết giữa Hub và YouTube Studio.
 
 ## Chạy lại
 
 ```
 py -m unittest test_hub -v
-py app.py --demo --self-check data/ui_selfcheck.json
-dist/archive/YouTubeContentHub/YouTubeContentHub.exe --demo --self-check data/packaged_ui_check.json
-dist/archive/YouTubeContentHub/YouTubeContentHub.exe --smoke-render data/packaged_render_check.json
+py app.py --self-check "..\OUTPUT TỔNG\Content Hub\selfcheck.json"
+py app.py --demo --self-check "..\OUTPUT TỔNG\Content Hub\demo_selfcheck.json"
+build.bat
+dist\YouTubeContentHub\YouTubeContentHub.exe --self-check "..\OUTPUT TỔNG\Content Hub\exe_selfcheck.json"
 ```
 
-Lệnh smoke tạo một thư mục/database mới cho mỗi lần chạy, không sửa database sản xuất.
-Không cần lặp lại smoke khi chỉ sửa nội dung tài liệu.
+Lệnh self-check chỉ đọc/khởi tạo UI và ghi báo cáo; database demo được seed idempotent.
+Không chạy lệnh Analytics thật nếu chưa có OAuth client và chưa được người dùng cho phép.

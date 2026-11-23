@@ -1,10 +1,8 @@
 """Opt-in sample records, only used with a separate demo database."""
-import os
 from pathlib import Path
 import struct
-import subprocess
 import zlib
-from store import fingerprint
+from store import DomainError, fingerprint
 
 
 def _png_chunk(kind, payload):
@@ -33,32 +31,6 @@ def create_demo_thumbnail(path):
              + _png_chunk(b"IDAT", zlib.compress(bytes(scanlines), 6))
              + _png_chunk(b"IEND", b""))
     path.write_bytes(image)
-
-
-def create_demo_clip(path, workspace):
-    """Create a short synthetic test-pattern clip with bundled FFmpeg when available."""
-    ffmpeg = Path(workspace) / "editer" / "TOOL EDIT" / "v3" / "v3" / "tools" / "ffmpeg.exe"
-    if not ffmpeg.is_file():
-        return False
-    partial = path.with_name(path.stem + ".partial" + path.suffix)
-    command = [str(ffmpeg), "-y", "-v", "error", "-f", "lavfi", "-i",
-               "testsrc2=size=640x360:rate=24:duration=3", "-an", "-c:v", "libx264",
-               "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(partial)]
-    try:
-        subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
-                       creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
-        if not partial.is_file() or partial.stat().st_size == 0:
-            return False
-        partial.replace(path)
-        return True
-    except (OSError, subprocess.CalledProcessError):
-        return False
-    finally:
-        if partial.exists():
-            try:
-                partial.unlink()
-            except OSError:
-                pass
 
 
 def seed(store, workspace):
@@ -144,17 +116,13 @@ def seed(store, workspace):
     ensure_asset(hero_project, "research", research)
     ensure_asset(hero_project, "thumbnail", thumbnail,
                  note="Ảnh hình học tổng hợp phục vụ demo; không lấy từ tài khoản hoặc output thật.")
-    clip = output_root / "demo_clip.mp4"
-    if (clip.is_file() and clip.stat().st_size > 0) or create_demo_clip(clip, workspace):
-        ensure_asset(hero_project, "clip", clip,
-                     note="Clip test tổng hợp từ FFmpeg; không phải nội dung kênh thật.")
     # Demo seed never links arbitrary production media from workspace output folders.
     # All transitions use real domain gates; no SQL fabrication of production stages.
-    for _ in range(4):
+    for _ in range(2):
         p = store.project(hero_project)
-        if p["stage"] not in ("idea", "research", "thumbnail", "clip"):
+        if p["stage"] not in ("idea", "research"):
             break
         try:
             store.advance(hero_project, p["revision"], "demo-seed")
-        except ValueError:
+        except DomainError:
             break
