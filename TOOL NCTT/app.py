@@ -15,7 +15,7 @@ except Exception:
     Workbook = None
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_ROOT = os.path.join(os.path.dirname(APP_DIR), 'TOOL Video Flow OUTPUT')
+OUTPUT_ROOT = os.path.join(os.path.dirname(APP_DIR), 'OUTPUT TỔNG')
 EXPORT_DIR = os.path.join(OUTPUT_ROOT, 'NCTT')
 CACHE_DIR = os.path.join(APP_DIR, 'cache')
 for d in (EXPORT_DIR, CACHE_DIR):

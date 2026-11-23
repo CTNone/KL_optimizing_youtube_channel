@@ -3,9 +3,9 @@
 ## Thư mục và vai trò
 
 - `TOOL EDIT/v3/v3/`: mã nguồn Editor, Flow Loop engine, hướng dẫn, preset và test. Chạy bản source bằng `run.bat`; build Windows EXE bằng `build_flow.bat` sau khi xác nhận FFmpeg/build dependencies sẵn sàng.
-- `Nhạc jazz/`: thư viện audio, workbook YouTube Audio Library, công cụ quản lý nhạc và dữ liệu attribution. Các gói CapCut cùng báo cáo thư viện được xuất vào `TOOL Video Flow OUTPUT/Music Manager` và `TOOL Video Flow OUTPUT/Music Library`. Không xóa bài từ workbook/audit bằng suy đoán thể loại.
+- `Nhạc jazz/`: thư viện audio, workbook YouTube Audio Library, công cụ quản lý nhạc và dữ liệu attribution. Các gói CapCut cùng báo cáo thư viện được xuất vào `OUTPUT TỔNG/Music Manager` và `OUTPUT TỔNG/Music Library`. Không xóa bài từ workbook/audit bằng suy đoán thể loại.
 - `SOUND EFFECT/`: hiệu ứng âm thanh ambience dùng khi dựng.
-- `TOOL Video Flow OUTPUT/`: kho chung cho sản phẩm của các tool; video ở `Video/`, ảnh ở `Thumbnail/`, bản dựng Editor ở `Editor/`.
+- `OUTPUT TỔNG/`: kho chung cho sản phẩm của các tool; video ở `Video/`, ảnh ở `Thumbnail/`, bản dựng Editor ở `Editor/`.
 
 ## Quy trình đề xuất
 

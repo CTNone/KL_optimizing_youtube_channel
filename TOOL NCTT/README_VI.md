@@ -35,7 +35,7 @@ Vì vậy bộ đếm là **bộ đếm an toàn nội bộ**, không phải s�
 - `app.py`: chương trình chính.
 - `api_key.txt`: API key được lưu cục bộ.
 - `quota_usage.json`: bộ đếm quota theo ngày và theo API key.
-- `TOOL Video Flow OUTPUT/NCTT/<keyword>_<thời gian>_<mã riêng>/`: thư mục riêng cho mỗi lần chạy, chứa Excel/CSV và thư mục `thumbnails/`. Các kết quả cũ được giữ nguyên.
+- `OUTPUT TỔNG/NCTT/<keyword>_<thời gian>_<mã riêng>/`: thư mục riêng cho mỗi lần chạy, chứa Excel/CSV và thư mục `thumbnails/`. Các kết quả cũ được giữ nguyên.
 - Thumbnail mặc định được nhúng vào cột `Thumbnail` của sheet `VIDEOS`; ảnh vẫn hiển thị khi chuyển file Excel sang máy khác. Có thể bỏ chọn trên giao diện; CSV giữ URL ảnh. Nếu tải ảnh lỗi, báo cáo ghi rõ ảnh không khả dụng.
 
 

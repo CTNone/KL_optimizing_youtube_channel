@@ -21,7 +21,7 @@ Một số fixture đọc `live-resolution-diagnostic.json`, `REAL_FLOW_TEST.jso
 
 Ngày 07/10/2026 đã upload một ảnh, prompt “tuyết rơi.”, Veo 3.1 - Lite, Thành phần, 16:9, x1. Tải qua UI Flow ở 1080p, 4K bị khóa; MP4 thực tế 1920×1080, 8 giây, 23.310.045 byte. Tải lại cùng clip, không submit thêm; đã xác nhận trở về composer.
 
-Bằng chứng trong dự án: `REAL_FLOW_RESULT.json`, `REAL_FLOW_TEST.json`, lượt `Documents/TOOL Video Flow OUTPUT/Video/2026-10-07/13-00-20_ce8ac028/video.json`, sidecar/hash MP4 và `AUDIT.md`. Đây là dữ kiện cũ của tài khoản lúc kiểm tra; không chứng minh mức tải hoặc model còn giống hôm nay.
+Bằng chứng trong dự án: `REAL_FLOW_RESULT.json`, `REAL_FLOW_TEST.json`, lượt `Documents/KHÓA LUẬN CỦA TÔI/OUTPUT TỔNG/Video/2026-10-07/13-00-20_ce8ac028/video.json`, sidecar/hash MP4 và `AUDIT.md`. Đây là dữ kiện cũ của tài khoản lúc kiểm tra; không chứng minh mức tải hoặc model còn giống hôm nay.
 
 Những sửa sau đó về nhận thumbnail-only/kiểm tra 0,25 giây và mode/remount được kiểm thử cục bộ. Chưa chứng minh toàn bộ các thay đổi sau đó trên Google thật; 9:16/x2–x4/tài khoản khác cũng chưa có bằng chứng thật. Header/hash và MP4 track metadata không chứng minh giải mã đầy đủ mọi frame.
 

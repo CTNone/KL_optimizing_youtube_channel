@@ -4,6 +4,10 @@
 
 This is a Windows-first Python repository for managing YouTube content production. `CONTENT HUB/` contains the SQLite workflow manager (`app.py`, `store.py`, `services.py`), demo data, tests, and PyInstaller build script. `TOOL NCTT/` contains market research; `TOOL THUMBNAIL/` contains thumbnail generation and shared Chrome/Flow integration; `TOOL Video Flow/` contains the integrated studio, video controller, and pipeline tests. `editer/TOOL EDIT/v3/v3/` contains the Tkinter editor, FFmpeg loop engine, and rendering tests. Supporting music tools are under `editer/Nhạc jazz/`. Test files live beside the code they cover; generated media, local databases, credentials, build output, and downloaded libraries are not source files.
 
+For follow-up work on the post-publication Analytics tab, read `CONTENT HUB/AI_HANDOFF.md`
+before changing code. It records the approved product decisions, OAuth setup, data mapping,
+current limitations, and the files that own the feature.
+
 ## Run, Build, and Test
 
 Run the local management app with `cd "CONTENT HUB"; py app.py`; use `py app.py --demo` to open its separate sample database. Run manager tests with `py -m unittest test_hub -v` from `CONTENT HUB/`. From the editor directory, run `py selftest.py` and `py -m unittest test_flow_loop -v`; build its Windows package with `build_flow.bat`. Market research and thumbnail tools use their local `run.bat` launchers. Flow integration tests are in `TOOL Video Flow/`; run the relevant `python -m unittest` command from that directory. Read each tool’s README before installing dependencies or building.

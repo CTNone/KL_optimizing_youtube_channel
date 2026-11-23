@@ -11,7 +11,7 @@ from tkinter import ttk, messagebox
 LOCAL = timezone(timedelta(hours=7))
 
 def external_output_root(project_root):
-    return Path(project_root).parent / 'TOOL Video Flow OUTPUT'
+    return Path(project_root).parent / 'OUTPUT TỔNG'
 
 def dated_output(base, category):
     now = datetime.now(LOCAL)

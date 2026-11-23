@@ -4,9 +4,10 @@ Ngày thiết kế: 16/10/2026. Người vận hành xác nhận: **một ngư�
 
 ## Bài toán và ý tưởng sản phẩm
 
-Đơn vị quản trị trung tâm là **dự án nội dung**, không phải một file video hoặc một
-tool. Mỗi dự án thuộc đúng một kênh và đi qua quy trình có điều kiện chuyển bước.
-Các tool là bộ phận thực thi; cơ sở dữ liệu và quy tắc nghiệp vụ mới là lớp quản trị.
+Đơn vị quản trị có hai tầng: **album/playlist phát hành** thuộc một kênh, và nhiều
+**video/mix** trong album. Mỗi video/mix giữ quy trình, tài nguyên, QC, render và
+trạng thái xuất bản riêng. Các tool là bộ phận thực thi; cơ sở dữ liệu và quy tắc
+nghiệp vụ mới là lớp quản trị. Dự án cũ chưa gắn album tiếp tục hoạt động độc lập.
 
 Ba câu hỏi cần trả lời ngay trên sản phẩm:
 
@@ -22,13 +23,19 @@ flowchart LR
     UI --> Domain[Store: quy tắc nghiệp vụ]
     Domain --> DB[(SQLite WAL)]
     UI --> Adapter[Bộ tích hợp]
-    Adapter --> Studio[Studio NCTT + Thumbnail + Video]
+    Adapter --> NCTT[NCTT research]
+    Adapter --> Music[Music Manager]
     Adapter --> Editor[Editor Flow Loop]
+    UI --> Flow[Google Flow Agent website]
     UI --> Queue[Hàng đợi bền vững]
     Queue --> Worker[Một render worker]
     Worker --> Engine[Engine editor + FFmpeg]
     Engine --> Output[Thành phẩm / báo cáo]
     Output --> Domain
+    UI --> Analytics[YouTube Analytics API]
+    UI --> Reporting[YouTube Reporting API · CTR]
+    Analytics --> Domain
+    Reporting --> Domain
 ```
 
 `app.py` dựng UI và không chứa SQL; `store.py` quản lý dữ liệu, chuyển bước, QC,
@@ -39,37 +46,48 @@ dùng mã editor đã có. Không sao chép automation Google Flow vào Hub.
 
 ```mermaid
 erDiagram
+    CHANNEL ||--o{ ALBUM : groups
+    ALBUM ||--o{ PROJECT : contains
     CHANNEL ||--o{ PROJECT : owns
     PROJECT ||--o{ ASSET : contains
     PROJECT ||--o{ REVIEW : reviewed
     ASSET ||--o{ REVIEW : approved_version
     PROJECT ||--o{ JOB : executes
     PROJECT ||--o{ EVENT : records
-    PROJECT ||--o{ METRIC : measures
     JOB o|--o{ JOB : retry_of
 ```
 
 - **Channel:** tên, ngách, URL, phong cách, trạng thái lưu trữ.
-- **Project:** kênh đích, brief, người phụ trách, deadline, stage, revision, lịch đăng, URL.
+- **Album:** kênh đích, tên đợt phát hành, brief chung và ngày mục tiêu.
+- **Project/video:** kênh đích, album tùy chọn, tiêu đề video, brief riêng, người phụ trách,
+  deadline, stage, revision, playlist Music Manager riêng, lịch đăng nội bộ và URL được người vận hành xác nhận.
 - **Asset:** project, loại, nhóm, version, path, bytes, mtime, SHA-256, ghi chú.
 - **Review:** đúng asset thành phẩm, decision, checklist, reviewer, note và thời gian.
 - **Job:** snapshot nguồn/cấu hình, lifecycle, tiến trình, kết quả/lỗi, retry_of.
 - **Event:** hành động, nhãn người thao tác, project, dữ liệu và thời gian UTC+7.
-- **Metric:** snapshot tích lũy, nguồn manual, thời điểm ghi.
+- **Metric:** snapshot theo lần làm mới, gồm lượt xem, thời gian xem, AVD, tỷ lệ xem,
+  comment, like, share và reach; giữ tương thích với các bản ghi chỉ số thủ công cũ.
+
+Playlist nhạc được gắn với từng video/mix sẽ làm nguồn nhạc mặc định cho render video
+đó; nếu chưa gắn, luồng render dùng các bài đã gán cho kênh. Album chỉ nhóm đầu ra,
+còn playlist, QC và tài nguyên được giữ riêng theo từng video để tránh dùng nhầm nhạc
+hoặc duyệt nhầm bản.
 
 ## Các quyết định quan trọng
 
 ### ADR-01: Desktop và SQLite trước
 
-Phù hợp với máy Windows và các tool Python đang có; không cần deploy server hoặc
-quản lý tài khoản cloud. SQLite WAL cho đọc trong lúc worker ghi; các transaction
+Phù hợp với máy Windows và các tool Python đang có; không cần deploy server. Analytics
+dùng OAuth chỉ đọc, token được giữ trong thư mục dữ liệu cục bộ của người dùng. SQLite WAL cho đọc trong lúc worker ghi; các transaction
 nghiệp vụ dùng BEGIN IMMEDIATE và khóa ngoại. Không thiết kế cho nhiều máy ghi qua share.
 
 ### ADR-02: Quản trị tách khỏi sinh nội dung
 
-Hub mở đúng launcher của Studio hiện tại. Người dùng quyết định khi nào submit
-Flow và chọn tài nguyên nào gắn vào dự án. Không coi mở tool là hoàn thành tác vụ;
-không tự gắn file mới nhất trong thư viện vào một dự án.
+Hub mở NCTT, Music Manager và Tool Edit theo ngữ cảnh. Flow được mở trên website
+chính thức, nơi người dùng dùng Agent để sáng tạo. Hub chuẩn bị brief chung của album,
+brief riêng của video và danh sách nguồn; người dùng quyết định khi nào tạo nội dung
+và nhập kết quả vào đúng video. Mở website không được coi là hoàn thành tác vụ; không
+tự gắn file mới nhất trong thư viện vào một dự án.
 
 ### ADR-03: Chuyển bước có điều kiện và audit cùng transaction
 
@@ -91,22 +109,29 @@ Hub dùng thư mục riêng theo job để giữ các lần tạo thành phẩm.
 
 ### ADR-06: Dữ liệu demo tách database
 
-Không tạo kênh/chỉ số giả trong database sản xuất. Demo có nhãn rõ, hai kênh và hai
-dự án. Thử nghiệm dùng clip tổng hợp và thư mục tạm, không tiêu thụ Flow.
+Không tạo kênh/chỉ số giả trong database sản xuất. Báo cáo kiểm thử ngày 16/10/2026 ghi
+nhận hai kênh và hai dự án trên bản khi đó. Mã seed trong database demo sạch tạo ba
+kênh, sáu album và mười hai video/mix; database demo cũ được giữ nguyên để tránh xóa dữ
+liệu, nên có thể còn các mục mẫu hoặc media từ lần chạy trước. Bộ seed là dữ liệu minh
+họa giao diện, chưa thay thế bộ dữ liệu thực nghiệm có nguồn gốc được mô tả trong kế
+hoạch. Seed chỉ tạo tài nguyên tổng hợp và không tự gắn media tùy ý từ thư mục output.
+Thử nghiệm render dùng clip tổng hợp và thư mục tạm, không tiêu thụ Flow.
 
 ## Ma trận phạm vi
 
 | Hạng mục | Trạng thái bản đầu |
 |---|---|
-| Kênh, dự án, bộ lọc, brief, deadline | Đã triển khai |
+| Kênh, album/playlist, video/mix con, bộ lọc, brief, deadline | Đã triển khai |
 | Quy trình có điều kiện, revision, lịch sử | Đã triển khai |
 | Nguồn/phiên bản/hash, QC và yêu cầu sửa | Đã triển khai |
-| Mở Studio/Editor và xuất handoff | Đã triển khai, chọn/nhập nguồn thủ công |
+| Mở NCTT, Music Manager, Editor; mở Flow website và xuất handoff | Đã triển khai, chọn/nhập nguồn thủ công |
 | Render queue, hủy, lỗi, retry, restart | Đã triển khai, tích hợp engine thực |
 | Lịch đăng và xác nhận URL | Đã triển khai, người dùng thực hiện xuất bản |
-| Snapshot chỉ số và xuất hồ sơ | Đã triển khai, nguồn manual |
+| Xuất hồ sơ dự án và lịch sử | Đã triển khai |
+| Theo dõi video sau đăng | Đã triển khai: OAuth chỉ đọc, snapshot theo yêu cầu và lịch sử trong Hub |
+| CTR/impressions | Đã triển khai qua YouTube Reporting API; báo cáo hằng ngày, tối đa 28 ngày có sẵn |
 | Tài khoản, RBAC, cộng tác qua mạng | Ngoài phạm vi MVP một người |
-| Đồng bộ API YouTube và đăng tự động | Giai đoạn mở rộng |
+| Đăng YouTube tự động | Giai đoạn mở rộng |
 | SEO/AI planner/so sánh thumbnail | Giai đoạn mở rộng |
 | Đọc kết quả Studio tự động theo mã dự án | Giai đoạn tiếp theo; cần hợp đồng project_id/handoff |
 

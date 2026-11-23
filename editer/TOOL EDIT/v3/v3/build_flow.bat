@@ -5,7 +5,7 @@ cd /d "%~dp0"
 if not exist ".venv_flow\Scripts\python.exe" py -3.11 -m venv .venv_flow
 if errorlevel 1 goto :failed
 
-".venv_flow\Scripts\python.exe" -m pip install --upgrade pyinstaller
+".venv_flow\Scripts\python.exe" -m pip install --disable-pip-version-check pyinstaller
 if errorlevel 1 goto :failed
 
 if not exist "tools\ffmpeg.exe" goto :missing_ffmpeg
@@ -21,9 +21,9 @@ if errorlevel 1 goto :failed
   --distpath "build\tool_edit_candidate\dist" ^
   --workpath "build\tool_edit_candidate\work" ^
   --specpath "build\tool_edit_candidate\spec" ^
-  --add-binary "tools\ffmpeg.exe;tools" ^
-  --add-binary "tools\ffprobe.exe;tools" ^
-  --add-data "presets;presets" ^
+  --add-binary "%CD%\tools\ffmpeg.exe;tools" ^
+  --add-binary "%CD%\tools\ffprobe.exe;tools" ^
+  --add-data "%CD%\presets;presets" ^
   app.py
 if errorlevel 1 goto :failed
 
@@ -35,6 +35,7 @@ del /q "%CHECK_FILE%"
 
 rem Replace only ToolEdit; sibling tool builds and output folders remain untouched.
 if exist "dist\ToolEdit" rmdir /s /q "dist\ToolEdit"
+if exist "dist\ToolEdit" goto :editor_still_running
 move "build\tool_edit_candidate\dist\ToolEdit" "dist\ToolEdit"
 if errorlevel 1 goto :failed
 echo Tool Edit da duoc cap nhat: dist\ToolEdit\ToolEdit.exe
@@ -51,6 +52,10 @@ goto :failed
 
 :candidate_failed
 echo Ban build moi chua qua self-check. Ban ToolEdit cu van duoc giu nguyen.
+goto :failed
+
+:editor_still_running
+echo Hay dong Tool Edit dang mo roi chay build lai. File dang duoc ung dung su dung nen chua the thay ban moi.
 goto :failed
 
 :failed

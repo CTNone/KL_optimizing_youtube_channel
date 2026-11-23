@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 ROOT = Path(__file__).resolve().parent
-OUTPUT_ROOT = ROOT.parent / "TOOL Video Flow OUTPUT" / "Flow TXT"
+OUTPUT_ROOT = ROOT.parent / "OUTPUT TỔNG" / "Flow TXT"
 DEFAULTS = {
     "url": "https://labs.google/fx/tools/flow",
     "prompt": 'textarea, [contenteditable="true"][role="textbox"]',

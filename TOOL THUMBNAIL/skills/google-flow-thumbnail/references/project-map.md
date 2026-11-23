@@ -50,7 +50,7 @@ Shortcut `NCTT + Thumbnail.lnk` được kiểm tra trong phiên trước: chạ
 
 - State theo hồ sơ Desktop ở `TOOL THUMBNAIL\desktop-data\<profile>\state.json`: `history`, `limits`. Profile kết nối Chrome thường có dạng `chrome-<hash>`; đừng cố định hash của một tài khoản.
 - Lịch sử có `attempts[].time`, `model`, `status`, `reason`, `files`; đọc lượt mới nhất để tránh chữa lại lỗi cũ.
-- Video có `TOOL Video Flow OUTPUT\Video\<ngày>\<lượt>\video.json`. `submitted`, `submitAttempted`, `stage`, `error` giúp phân biệt lỗi trước/sau gửi. Chỉ đọc khi liên quan giao diện dùng chung.
+- Video có `OUTPUT TỔNG\Video\<ngày>\<lượt>\video.json`. `submitted`, `submitAttempted`, `stage`, `error` giúp phân biệt lỗi trước/sau gửi. Chỉ đọc khi liên quan giao diện dùng chung.
 - `connect_existing` đọc `DevToolsActivePort` của Chrome User Data và kết nối CDP localhost. Trên Chrome có hỗ trợ, người dùng bật remote debugging và chấp thuận kết nối. Giữ browser hiện có khi tool disconnect.
 - Mất kết nối CDP không chứng minh selector sai. Không tự clone session hay mở một hồ sơ mới để thay cho tab đăng nhập sẵn của người dùng.
 - `mode-review/`, `*-review.py`, và `inspect_flow_controls.py` là file kiểm thử/đối chiếu của các phiên sửa trước; không coi chúng là mã đang chạy.

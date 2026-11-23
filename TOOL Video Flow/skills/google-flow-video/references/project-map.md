@@ -1,6 +1,6 @@
 # Bản đồ dự án
 
-Gốc trên máy hiện tại: `C:\Users\CTN_Number_ONE\Documents\KHÓA LUẬN CỦA TÔI\TOOL Video Flow`. Kho output chung nằm trong workspace tại `TOOL Video Flow OUTPUT/`, gồm `Video/`, `Thumbnail/`, `NCTT/`, `Flow TXT/`, `Editor/`, `Music Manager/`, `Music Library/` và `Content Hub/`. Nếu chuyển máy, xác định lại workspace; không chép đường dẫn người dùng này vào logic dùng chung.
+Gốc trên máy hiện tại: `C:\Users\CTN_Number_ONE\Documents\KHÓA LUẬN CỦA TÔI\TOOL Video Flow`. Kho output chung nằm trong workspace tại `OUTPUT TỔNG/`, gồm `Video/`, `Thumbnail/`, `NCTT/`, `Flow TXT/`, `Editor/`, `Music Manager/`, `Music Library/` và `Content Hub/`. Nếu chuyển máy, xác định lại workspace; không chép đường dẫn người dùng này vào logic dùng chung.
 
 | File / thư mục | Vai trò |
 | --- | --- |

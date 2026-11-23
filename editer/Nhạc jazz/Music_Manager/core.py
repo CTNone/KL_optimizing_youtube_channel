@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import sqlite3
+import subprocess
 import unicodedata
 from contextlib import closing
 from datetime import datetime
@@ -40,7 +41,7 @@ def csv_value(value):
 class Catalog:
     def __init__(self, root, data_dir=None):
         self.root = Path(root).resolve()
-        self.output_root = self.root.parents[1] / 'TOOL Video Flow OUTPUT' / 'Music Manager'
+        self.output_root = self.root.parents[1] / 'OUTPUT TỔNG' / 'Music Manager'
         self.output_root.mkdir(parents=True, exist_ok=True)
         workspace = self.root.parents[1]
         hub_dir = workspace / 'CONTENT HUB'
@@ -101,29 +102,33 @@ class Catalog:
             self.db.backup(dest)
         return path
 
-    def scan(self):
+    def scan(self, library_root=None):
         metadata_path = self.output_root.parent / 'Music Library' / 'library_audit.json'
         if not metadata_path.exists():
             metadata_path = self.root / 'library_audit.json'
         metadata = json.loads(metadata_path.read_text(encoding='utf-8')) if metadata_path.exists() else []
         lookup = {}
+        metadata_groups = {}
         with self.db:
             self.db.execute('UPDATE music_files SET present=0')
             self.db.execute('DELETE FROM music_memberships')
             for item in metadata:
                 tid = identity(item['title'], item['artist'])
-                self.db.execute('INSERT OR IGNORE INTO music_tracks(id,title,artist) VALUES(?,?,?)', (tid,item['title'],item['artist']))
-                self.db.execute('INSERT OR IGNORE INTO music_memberships VALUES(?,?)', (tid,item['folder']))
+                metadata_groups.setdefault(tid, set()).add(item.get('folder', ''))
                 for name in (item.get('filename',''), f"{item['title']} - {item['artist']}"):
-                    lookup[filename_key(re.sub(r'^\d+\s*-\s*','',Path(name).stem if name.endswith('.mp3') else name))] = tid
+                    if name:
+                        lookup[filename_key(re.sub(r'^\d+\s*-\s*','',Path(name).stem if Path(name).suffix else name))] = tid
             count = 0
-            scan_roots = (self.root, self.output_root.parent / 'Music Library' / 'Tracks')
+            selected_root = Path(library_root or self.root).expanduser().resolve()
+            scan_roots = (selected_root, self.output_root.parent / 'Music Library' / 'Tracks')
             for scan_root in scan_roots:
+                if scan_root == scan_roots[1] and scan_root == scan_roots[0]:
+                    continue
                 if not scan_root.is_dir():
                     continue
                 for path in scan_root.rglob('*'):
                     rel = path.relative_to(scan_root)
-                    if scan_root == self.root and any(p.startswith('.') or p in ('Music_Manager','CapCut_Exports','__pycache__') for p in rel.parts):
+                    if any(p.startswith('.') or p in ('Music_Manager','CapCut_Exports','__pycache__') for p in rel.parts):
                         continue
                     if path.suffix.lower() not in EXTENSIONS or not path.is_file():
                         continue
@@ -140,6 +145,9 @@ class Catalog:
                     if marked_credit:
                         self.db.execute("UPDATE music_tracks SET notes=? WHERE id=? AND notes=''",('Tên tệp nguồn có đánh dấu GHI CÔNG. Hãy kiểm tra và nhập nội dung ghi công.',tid))
                     self.db.execute('INSERT OR IGNORE INTO music_memberships VALUES(?,?)',(tid,group))
+                    for metadata_group in metadata_groups.get(tid, ()):
+                        if metadata_group:
+                            self.db.execute('INSERT OR IGNORE INTO music_memberships VALUES(?,?)',(tid,metadata_group))
                     stat = path.stat()
                     self.db.execute('INSERT OR REPLACE INTO music_files VALUES(?,?,?,?,1)',(str(path.resolve()),tid,stat.st_size,stat.st_mtime_ns))
                     count += 1
@@ -188,11 +196,13 @@ class Catalog:
         with self.db:
             self.db.executemany('INSERT OR IGNORE INTO music_channel_tracks(channel_id,track_id) VALUES(?,?)',
                                 ((name, tid) for tid in track_ids))
+        self.log_event('Thêm vào kênh', track_ids, {'channel_id': name})
 
     def unassign_channel(self, name, track_ids):
         with self.db:
             self.db.executemany('DELETE FROM music_channel_tracks WHERE channel_id=? AND track_id=?',
                                 ((name, tid) for tid in track_ids))
+        self.log_event('Bỏ khỏi kênh', track_ids, {'channel_id': name})
 
     def channel_tracks(self, name):
         return [dict(r) for r in self.db.execute('''SELECT t.*,
@@ -201,10 +211,57 @@ class Catalog:
             WHERE ct.channel_id=? AND EXISTS(SELECT 1 FROM music_files f WHERE f.track_id=t.id AND f.present=1)
             ORDER BY t.title COLLATE NOCASE, t.artist''', (name,))]
 
+    def channel_track_count(self, channel_id):
+        return self.db.execute('SELECT count(*) FROM music_channel_tracks WHERE channel_id=?', (channel_id,)).fetchone()[0]
+
     def get(self, tid):
         row = self.db.execute('SELECT * FROM music_tracks WHERE id=?',(tid,)).fetchone()
         if not row: raise ValueError('Không tìm thấy bài hát')
         return dict(row)
+
+    def delete_track(self, track_id):
+        track = self.get(track_id)
+        rows = self.db.execute('SELECT path FROM music_files WHERE track_id=? AND present=1', (track_id,)).fetchall()
+        paths = []
+        failures = []
+        for row in rows:
+            stored_path = Path(row['path'])
+            path = (stored_path if stored_path.is_absolute() else self.root / stored_path).resolve()
+            if path.suffix.lower() not in EXTENSIONS:
+                failures.append((row['path'], 'Không phải định dạng âm thanh được quản lý'))
+                continue
+            try:
+                if path.is_file():
+                    path.unlink()
+                paths.append(row['path'])
+            except OSError as error:
+                failures.append((row['path'], str(error)))
+        if failures:
+            with self.db:
+                for path in paths:
+                    self.db.execute('UPDATE music_files SET present=0 WHERE path=?', (path,))
+                for stored_path, _reason in failures:
+                    candidate = Path(stored_path)
+                    candidate = (candidate if candidate.is_absolute() else self.root / candidate).resolve()
+                    if not candidate.is_file():
+                        self.db.execute('UPDATE music_files SET present=0 WHERE path=?', (stored_path,))
+            self.log_event('Xóa bài chưa hoàn tất', details={
+                'title': track['title'], 'track_id': track_id,
+                'deleted_files': len(paths), 'failed_files': failures,
+            })
+            raise RuntimeError(f"Đã xóa {len(paths)} tệp nhưng còn {len(failures)} tệp không xóa được. Hãy kiểm tra quyền truy cập rồi thử lại.")
+        self.log_event('Xóa bài và tệp nguồn', details={
+            'title': track['title'], 'artist': track['artist'], 'track_id': track_id,
+            'deleted_files': len(paths), 'paths': paths,
+        })
+        with self.db:
+            self.db.execute('DELETE FROM music_project_tracks WHERE track_id=?', (track_id,))
+            self.db.execute('DELETE FROM music_channel_tracks WHERE track_id=?', (track_id,))
+            self.db.execute('DELETE FROM music_memberships WHERE track_id=?', (track_id,))
+            self.db.execute('DELETE FROM music_track_tags WHERE track_id=?', (track_id,))
+            self.db.execute('DELETE FROM music_files WHERE track_id=?', (track_id,))
+            self.db.execute('DELETE FROM music_tracks WHERE id=?', (track_id,))
+        return paths
 
     def save_review(self, tid, status, credit, source='', license='', notes=''):
         if status not in STATUSES: raise ValueError('Trạng thái không hợp lệ')
@@ -216,6 +273,21 @@ class Catalog:
             self.db.execute('UPDATE music_tracks SET status=:status,credit=:credit,source=:source,license=:license,notes=:notes,reviewed=:reviewed WHERE id=:id',{**new,'id':tid})
             self.db.execute('INSERT INTO music_history(track_id,changed,before_json,after_json) VALUES(?,?,?,?)',(tid,stamp(),json.dumps(old,ensure_ascii=False),json.dumps(new,ensure_ascii=False)))
 
+    def log_event(self, action, track_ids=(), details=None):
+        payload = {'action': action, **(details or {})}
+        with self.db:
+            for track_id in track_ids or (None,):
+                self.db.execute('INSERT INTO music_history(track_id,changed,before_json,after_json) VALUES(?,?,?,?)',
+                                (track_id, stamp(), '{}', json.dumps(payload, ensure_ascii=False)))
+
+    def history(self, track_id=None, limit=300):
+        query = 'SELECT * FROM music_history ORDER BY id DESC LIMIT ?'
+        params = [limit]
+        if track_id:
+            query = 'SELECT * FROM music_history WHERE track_id=? ORDER BY id DESC LIMIT ?'
+            params.insert(0, track_id)
+        return [dict(row) for row in self.db.execute(query, params)]
+
     def projects(self):
         return [dict(r) for r in self.db.execute('SELECT p.*,count(pt.track_id) AS count FROM music_projects p LEFT JOIN music_project_tracks pt ON pt.project_id=p.id GROUP BY p.id ORDER BY p.id DESC')]
 
@@ -226,9 +298,11 @@ class Catalog:
         return cur.lastrowid
 
     def delete_project(self, pid):
+        track_ids = [row['track_id'] for row in self.db.execute('SELECT track_id FROM music_project_tracks WHERE project_id=?', (pid,))]
         with self.db:
             self.db.execute('DELETE FROM music_project_tracks WHERE project_id=?',(pid,))
             self.db.execute('DELETE FROM music_projects WHERE id=?',(pid,))
+        self.log_event('Xóa dự án', track_ids, {'project_id': pid})
 
     def project_items(self, pid):
         return [dict(r) for r in self.db.execute('SELECT t.*,pt.position FROM music_project_tracks pt JOIN music_tracks t ON t.id=pt.track_id WHERE pt.project_id=? ORDER BY pt.position',(pid,))]
@@ -239,10 +313,12 @@ class Catalog:
             for tid in ids:
                 pos += 1
                 self.db.execute('INSERT OR IGNORE INTO music_project_tracks VALUES(?,?,?)',(pid,tid,pos))
+        self.log_event('Thêm vào dự án', ids, {'project_id': pid})
 
     def remove(self, pid, ids):
         with self.db:
             for tid in ids: self.db.execute('DELETE FROM music_project_tracks WHERE project_id=? AND track_id=?',(pid,tid))
+        self.log_event('Bỏ khỏi dự án', ids, {'project_id': pid})
 
     def reorder(self, pid, ordered_ids):
         current = {r['id'] for r in self.project_items(pid)}
@@ -270,7 +346,7 @@ class Catalog:
     def credit_text(self, pid):
         return '\n\n'.join(r['credit'].strip() for r in self.project_items(pid) if r['status']==STATUSES[2] and r['credit'].strip())
 
-    def export(self, pid, draft=False):
+    def export(self, pid, draft=False, normalize_audio=False):
         project = self.db.execute('SELECT * FROM music_projects WHERE id=?',(pid,)).fetchone()
         if not project: raise ValueError('Chưa chọn dự án')
         rows = self.project_items(pid)
@@ -278,6 +354,9 @@ class Catalog:
         issues = self.issues(pid)
         if any(not self.source_file(r['id']) for r in rows): raise ValueError('Có bài thiếu tệp âm thanh. Hãy bỏ bài thiếu hoặc quét lại thư viện.')
         if issues and not draft: raise ValueError('Còn bài chưa kiểm tra hoặc thiếu ghi công. Kiểm tra trước hoặc xuất bản nháp.')
+        ffmpeg = shutil.which('ffmpeg') if normalize_audio else None
+        if normalize_audio and not ffmpeg:
+            raise ValueError('Không tìm thấy FFmpeg. Hãy cài FFmpeg và thêm ffmpeg.exe vào PATH để xuất bản đã chuẩn hóa.')
         parent = self.output_root / 'CapCut_Exports'; parent.mkdir(parents=True, exist_ok=True)
         tag = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         dest = parent / (safe_name(project['name']) + '_' + tag)
@@ -287,8 +366,28 @@ class Catalog:
         try:
             for index,r in enumerate(rows,1):
                 src = self.source_file(r['id'])
-                name = f'{index:03d} - {safe_name(r["title"] + " - " + r["artist"])}{src.suffix.lower()}'
-                shutil.copy2(src,audio/name)
+                suffix = '.mp3' if normalize_audio else src.suffix.lower()
+                name = f'{index:03d} - {safe_name(r["title"] + " - " + r["artist"])}{suffix}'
+                target = audio / name
+                if normalize_audio:
+                    audio_filter = (
+                        'silenceremove=start_periods=1:start_duration=0.1:start_threshold=-50dB,'
+                        'areverse,silenceremove=start_periods=1:start_duration=0.1:start_threshold=-50dB,'
+                        'areverse,adelay=300:all=1,apad=pad_dur=0.3,'
+                        'loudnorm=I=-14:TP=-2:LRA=11'
+                    )
+                    result = subprocess.run(
+                        [ffmpeg, '-hide_banner', '-loglevel', 'error', '-y', '-i', str(src),
+                         '-map', '0:a:0', '-vn', '-af', audio_filter, '-ar', '48000', '-ac', '2',
+                         '-codec:a', 'libmp3lame', '-b:a', '320k', '-map_metadata', '-1', str(target)],
+                        capture_output=True, text=True, encoding='utf-8', errors='replace',
+                    )
+                    if result.returncode or not target.is_file() or target.stat().st_size == 0:
+                        detail = result.stderr.strip().splitlines()
+                        reason = detail[-1] if detail else 'FFmpeg không tạo được tệp âm thanh.'
+                        raise RuntimeError(f'Không xử lý được bài “{r["title"]}”: {reason}')
+                else:
+                    shutil.copy2(src, target)
                 manifest.append({**r,'export_file':'Audio/'+name,'original_file':str(src)})
             (staging/'GHI_CONG.txt').write_text(self.credit_text(pid),encoding='utf-8-sig')
             (staging/'CAN_KIEM_TRA.txt').write_text('\n'.join(f'{title}: {reason}' for title,reason in issues) or 'Đã kiểm tra tất cả bài hát theo trạng thái bạn nhập.',encoding='utf-8-sig')
@@ -298,7 +397,12 @@ class Catalog:
                 fields=['position','title','artist','status','credit','source','license','reviewed','export_file','original_file']
                 writer=csv.DictWriter(f,fieldnames=fields); writer.writeheader()
                 for r in manifest: writer.writerow({k:csv_value(r[k]) for k in fields})
-            (staging/'HUONG_DAN.txt').write_text(('BẢN NHÁP — CÒN BÀI CHƯA KIỂM TRA.\n' if issues else '') + 'Mở dự án CapCut > Media > Import và chọn các tệp trong Audio.\nTên tệp có số thứ tự theo danh sách dự án.\nGHI_CONG.txt chứa nguyên văn nội dung bạn nhập cho các bài cần ghi công.\nDán nội dung này vào mô tả khi đăng video. Xem CAN_KIEM_TRA.txt trước khi đăng.\nĐây là gói tài nguyên, không phải tệp dự án CapCut.\nNếu đổi trạng thái ghi công hoặc danh sách bài, hãy xuất một gói mới.\n',encoding='utf-8-sig')
+            instructions = ('BẢN NHÁP — CÒN BÀI CHƯA KIỂM TRA.\n' if issues else '') + 'Mở dự án CapCut > Media > Import và chọn các tệp trong Audio.\nTên tệp có số thứ tự theo danh sách dự án.\nGHI_CONG.txt chứa nguyên văn nội dung bạn nhập cho các bài cần ghi công.\nDán nội dung này vào mô tả khi đăng video. Xem CAN_KIEM_TRA.txt trước khi đăng.\nĐây là gói tài nguyên, không phải tệp dự án CapCut.\nNếu đổi trạng thái ghi công hoặc danh sách bài, hãy xuất một gói mới.\n'
+            if normalize_audio:
+                instructions += ('Âm thanh trong gói này là bản MP3 đã chuẩn hóa riêng: mục tiêu -14 LUFS, đỉnh mục tiêu -2 dBTP để chừa khoảng an toàn cho mã hóa MP3; '
+                                  'đã cắt im lặng ở đầu/cuối và chừa 0,3 giây yên lặng trước/sau phần âm thanh.\n'
+                                  'Tệp nguồn không bị chỉnh sửa.\n')
+            (staging/'HUONG_DAN.txt').write_text(instructions,encoding='utf-8-sig')
             staging.rename(dest)
         except Exception:
             # Keep failed staging output for diagnosis; never advertise it as a finished export.

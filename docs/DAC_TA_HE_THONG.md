@@ -1,10 +1,82 @@
 # ĐẶC TẢ HỆ THỐNG  
 ## Hệ thống quản trị quy trình sản xuất nội dung trên nhiều kênh YouTube
 
+> **Đặc tả tổng hợp.** Phạm vi MVP hiện hành được chốt tại mục “Phạm vi hiện hành
+> (v2.0)”. Một số mục use case cũ vẫn mô tả phương án rộng để tham khảo; không xem
+> các mục đó là cam kết triển khai. Xem
+> [`../CONTENT HUB/KIEN_TRUC_VA_PHAM_VI.md`](../CONTENT%20HUB/KIEN_TRUC_VA_PHAM_VI.md)
+> và [`../CONTENT HUB/KE_HOACH_KHOA_LUAN.md`](../CONTENT%20HUB/KE_HOACH_KHOA_LUAN.md).
+
 **Tên đề tài:** Phát triển hệ thống quản trị quy trình sản xuất nội dung trên nhiều kênh YouTube  
-**Phiên bản tài liệu:** 1.0  
-**Loại tài liệu:** Đặc tả yêu cầu hệ thống / Use Case Specification  
-**Ngày cập nhật:** 07/09/2026  
+**Phiên bản tài liệu:** 2.0
+**Loại tài liệu:** Đặc tả yêu cầu hệ thống / Use Case Specification
+**Ngày cập nhật:** 04/11/2026
+
+> **Phạm vi có hiệu lực cho khóa luận:** MVP được chốt tại mục “Phạm vi hiện hành
+> (v2.0)” bên dưới và được chi tiết hóa trong
+> `CONTENT HUB/KE_HOACH_KHOA_LUAN.md` và `CONTENT HUB/KIEN_TRUC_VA_PHAM_VI.md`.
+> Các mục 1–4 và 23–25 đã được cập nhật theo phạm vi v2.0. Các mục 5–22 giữ lại
+> nội dung đề xuất rộng của bản 1.0 để tham khảo; những chức năng không xuất hiện trong
+> phạm vi v2.0 là backlog, không phải cam kết triển khai, tiêu chí nghiệm thu hay mô tả
+> chức năng đã hoàn thành.
+
+---
+
+# Phạm vi hiện hành (v2.0)
+
+## Định vị sản phẩm
+
+Content Hub là ứng dụng desktop cục bộ giúp **một người vận hành quản lý quy trình sản
+xuất trên nhiều kênh YouTube**. Đơn vị quản trị là kênh → album/đợt phát hành → video/mix.
+Mỗi video có brief, tài nguyên, lịch sử, kiểm duyệt, render job và trạng thái xuất bản
+riêng. Hệ thống quản trị và điều phối công việc; các công cụ hiện có có thể được mở theo
+ngữ cảnh để thực hiện một số bước sản xuất.
+
+## Mục tiêu khóa luận
+
+1. Tập trung trạng thái và dữ liệu sản xuất của nhiều kênh vào một nơi.
+2. Ngăn chuyển bước khi thiếu điều kiện nghiệp vụ.
+3. Truy được tài nguyên/phiên bản đã dùng và bản thành phẩm đã duyệt.
+4. Theo dõi render job, lỗi và thử lại an toàn sau gián đoạn.
+5. Đánh giá hệ thống bằng tính đúng đắn quy trình, khả năng truy vết và thời gian thao tác.
+
+## Phạm vi bản bảo vệ
+
+| Nhóm | Bao gồm trong MVP | Không thuộc MVP |
+|---|---|---|
+| Danh mục | Kênh, album, video/mix; lọc, brief, deadline | Tài khoản, nhóm người dùng, RBAC, cộng tác qua mạng |
+| Quy trình | Trạng thái có điều kiện, lịch sử thao tác, yêu cầu sửa | Workflow builder tùy biến hoặc nhiều loại quy trình |
+| Tài nguyên | Nhập tham chiếu file, loại/version/hash; liên kết đúng video | Kho lưu trữ media bất biến hoặc quản lý quyền nội dung tự động |
+| Sản xuất | Handoff và mở công cụ hiện có; hàng đợi render tích hợp | Tự sinh ảnh/video, chatbot Agent, tự động hóa thao tác dịch vụ ngoài |
+| Kiểm duyệt/xuất bản | QC theo đúng bản thành phẩm; lịch nội bộ; xác nhận URL thủ công | Tự đăng hoặc tự lên lịch YouTube |
+| Báo cáo | Audit, xuất hồ sơ, theo dõi analytics sau đăng qua OAuth chỉ đọc, lưu snapshot cục bộ | AI phân tích/dự báo, SEO AI, kế hoạch tuần tự động |
+
+## Use case nghiệm thu
+
+| ID | Use case | Kết quả cần chứng minh |
+|---|---|---|
+| MVP-01 | Quản lý kênh, album và video/mix | Video thuộc đúng kênh/album; lọc không lẫn dữ liệu |
+| MVP-02 | Quản lý brief và chuyển bước | Thiếu điều kiện thì từ chối chuyển bước, dữ liệu vẫn nhất quán |
+| MVP-03 | Nhập và truy vết tài nguyên | Xem được loại, phiên bản, đường dẫn và hash theo video |
+| MVP-04 | Bàn giao sang công cụ sản xuất | Handoff giữ đúng định danh video và danh sách tài nguyên |
+| MVP-05 | Tạo và theo dõi render job | Job có trạng thái, log, đầu ra, lỗi và liên kết dự án |
+| MVP-06 | QC video thành phẩm | Quyết định duyệt gắn với đúng asset; thay file làm QC cũ mất hiệu lực |
+| MVP-07 | Lịch nội bộ và xác nhận đã đăng | Chỉ chuyển khi đủ QC; lịch/URL được ghi rõ là do người dùng nhập |
+| MVP-08 | Phục hồi và xuất hồ sơ | Hủy/lỗi/retry/khởi động lại có thể truy vết; xuất được lịch sử dự án |
+| MVP-09 | Theo dõi video sau đăng | OAuth chỉ đọc; snapshot lượt xem, CTR, watch time, AVD, tỷ lệ xem trung bình, comment, like và share; xem lịch sử snapshot |
+
+## Quy tắc phạm vi
+
+Mọi chức năng không nằm trong bảng use case nghiệm thu được xem là mở rộng sau bảo vệ.
+Chỉ nhận thêm việc trước bảo vệ nếu nó sửa lỗi chặn luồng MVP, bảo vệ tính toàn vẹn dữ
+liệu hoặc đáp ứng yêu cầu bắt buộc của giảng viên hướng dẫn.
+
+## Giới hạn và tuyên bố
+
+MVP phục vụ một người dùng cục bộ trên Windows/SQLite. Hệ thống không tự tạo nội dung,
+không tự đăng video và không chứng minh việc sử dụng nó làm tăng lượt xem/doanh thu.
+Hash xác nhận file không đổi so với lần ghi nhận; hash không chứng minh chất lượng,
+quyền sử dụng hoặc tính đúng đắn nội dung.
 
 ---
 
@@ -12,30 +84,14 @@
 
 ## 1.1. Bối cảnh
 
-Trong môi trường vận hành nhiều kênh YouTube, quy trình sản xuất nội dung thường bao gồm nhiều giai đoạn như:
+Quy trình sản xuất nội dung cho nhiều kênh thường đi qua nhiều công cụ và người thực
+hiện. Thông tin về brief, file nguồn, phiên bản thành phẩm, trạng thái kiểm duyệt và
+lịch đăng vì vậy dễ bị lưu rời rạc. Người vận hành khó trả lời nhanh video đang ở bước
+nào, đang dùng đúng nguồn nào, bản nào đã được duyệt và cần xử lý gì khi render lỗi.
 
-- Xây dựng hoạt động ban đầu cho kênh.
-- Nghiên cứu thị trường và đối thủ.
-- Xây dựng ý tưởng nội dung.
-- Thiết kế thumbnail.
-- Tiếp nhận và kiểm duyệt video từ đội Editor.
-- Tối ưu SEO cho kênh và từng video.
-- Lập lịch và đăng video.
-- Theo dõi hiệu suất video.
-- Phân tích dữ liệu và đưa ra kế hoạch cho chu kỳ tiếp theo.
-
-Hiện nay các công việc này thường được thực hiện rời rạc trên nhiều công cụ như Google Sheets, Notion, YouTube Studio, vidIQ, ChatGPT, Grok, Google Flow, Photoshop và các công cụ AI khác.
-
-Điều này dẫn đến các vấn đề:
-
-- Dữ liệu phân tán.
-- Khó theo dõi trạng thái của từng video.
-- Nhiều thao tác lặp lại.
-- Khó quản lý nhiều kênh cùng lúc.
-- Khó lưu lịch sử thay đổi thumbnail và SEO.
-- Khó đánh giá chính xác nguyên nhân video hiệu quả hoặc kém hiệu quả.
-- Việc lập kế hoạch tuần tiếp theo phụ thuộc nhiều vào kinh nghiệm cá nhân.
-- Chưa tận dụng tốt AI và dữ liệu lịch sử để hỗ trợ ra quyết định.
+Khóa luận tập trung giải quyết vấn đề quản trị và truy vết đó bằng một ứng dụng desktop
+cục bộ. Nghiên cứu thị trường, tạo nội dung, SEO và xuất bản vẫn có thể diễn ra trên
+công cụ chuyên dụng; Content Hub giữ định danh, trạng thái và hồ sơ công việc xuyên suốt.
 
 ---
 
@@ -43,17 +99,14 @@ Hiện nay các công việc này thường được thực hiện rời rạc t
 
 Hệ thống được xây dựng nhằm:
 
-1. Quản lý tập trung nhiều kênh YouTube.
-2. Chuẩn hóa quy trình sản xuất nội dung.
-3. Giảm thao tác thủ công và công việc lặp lại.
-4. Hỗ trợ nghiên cứu thị trường bằng dữ liệu.
-5. Hỗ trợ tạo thumbnail bằng AI.
-6. Hỗ trợ tối ưu SEO cho kênh và video.
-7. Quản lý trạng thái video xuyên suốt vòng đời sản xuất.
-8. Thu thập và phân tích dữ liệu hiệu suất.
-9. Tạo báo cáo định kỳ.
-10. Đề xuất chiến lược nội dung cho tuần tiếp theo.
-11. Hình thành vòng lặp học liên tục giữa dữ liệu thị trường và dữ liệu hiệu suất nội bộ.
+1. Quản lý tập trung nhiều kênh, album phát hành và video/mix.
+2. Chuẩn hóa và kiểm soát trạng thái sản xuất theo điều kiện nghiệp vụ.
+3. Truy vết brief, tài nguyên, phiên bản, QC và lịch sử của từng video.
+4. Điều phối render job, ghi nhận lỗi và hỗ trợ thử lại/phục hồi.
+5. Tạo hồ sơ để kiểm tra, bàn giao và đánh giá quy trình.
+
+Các chức năng AI, nghiên cứu thị trường, SEO tự động, tự đăng và phân tích chiến lược
+không phải mục tiêu nghiệm thu của MVP hiện hành.
 
 ---
 
@@ -63,108 +116,69 @@ Hệ thống được chia thành các phân hệ chính:
 
 | Mã | Phân hệ | Mức độ triển khai |
 |---|---|---|
-| M0 | Quản trị người dùng và kênh | BUILD |
-| M1 | Hỗ trợ hoạt động kênh ban đầu | BUILD |
-| M2 | Nghiên cứu thị trường | BUILD |
-| M3 | Sản xuất thumbnail bằng AI | BUILD |
-| M4 | Quản lý duyệt video | Workflow thủ công |
-| M5 | SEO kênh và video | BUILD |
-| M6 | Quản lý lịch đăng video | Workflow thủ công |
-| M7 | Analytics và lập kế hoạch | BUILD |
+| M0 | Danh mục kênh, album và video/mix | MVP — triển khai trong Content Hub |
+| M1 | Hoạt động kênh và tương tác cộng đồng | Ngoài phạm vi khóa luận |
+| M2 | Nghiên cứu thị trường | Công cụ ngoài; chỉ bàn giao/đính kèm tài liệu khi cần |
+| M3 | Sinh thumbnail bằng AI | Công cụ ngoài; Hub quản lý tài nguyên đã chọn |
+| M4 | Workflow sản xuất, render và QC video | MVP — điều phối; một số bước do người dùng/công cụ ngoài thực hiện |
+| M5 | SEO và chấm điểm metadata | Ngoài phạm vi khóa luận |
+| M6 | Lịch nội bộ và xác nhận đã đăng | MVP — nhập thủ công, không đồng bộ YouTube |
+| M7 | Audit, xuất hồ sơ và theo dõi analytics sau đăng | MVP giới hạn; chỉ số lấy theo yêu cầu, CTR dùng báo cáo hằng ngày có độ trễ |
 
 ---
 
 # 4. Nguyên tắc thiết kế
 
-## 4.1. Closed-loop Content Operation
+## 4.1. Workflow sản xuất trong MVP
 
-Hệ thống được thiết kế theo vòng lặp:
+Luồng quản trị được nghiệm thu trong MVP:
 
 ```text
-MARKET RESEARCH
-      ↓
-MARKET INSIGHT
-      ↓
-CONTENT IDEA
-      ↓
-THUMBNAIL
-      ↓
-VIDEO QC
-      ↓
-SEO
-      ↓
-PUBLISH
-      ↓
-ANALYTICS
-      ↓
-WEEKLY REVIEW
-      ↓
-NEXT WEEK PLAN
-      ↓
-MARKET / CONTENT IDEA
+CHANNEL
+   ↓
+ALBUM / RELEASE
+   ↓
+VIDEO / MIX
+   ↓
+BRIEF + ASSETS
+   ↓
+RENDER JOB
+   ↓
+VERSIONED QC
+   ↓
+INTERNAL SCHEDULE
+   ↓
+MANUAL PUBLISH CONFIRMATION
 ```
 
-Kết quả từ video cũ phải trở thành dữ liệu đầu vào cho quyết định nội dung mới.
+Phân tích hiệu suất để lập kế hoạch nội dung mới là hướng mở rộng, không nằm trong
+luồng nghiệm thu MVP.
 
 ---
 
-## 4.2. Phân loại chức năng
+## 4.2. Phân loại phạm vi
 
-Hệ thống chia chức năng thành ba nhóm:
+### A. Quản trị và điều phối — trong phạm vi
 
-### A. Intelligent Module
+- Danh mục kênh/album/video, brief và trạng thái.
+- Tài nguyên có định danh và dấu vết phiên bản.
+- Điều kiện chuyển bước, audit, QC và lịch nội bộ.
+- Hàng đợi render cùng hồ sơ lỗi/phục hồi.
 
-Có sử dụng AI hoặc automation:
+### B. Thực thi bên ngoài — ngoài phạm vi sản phẩm
 
-- Phân tích xu hướng.
-- Sinh market insight.
-- Sinh prompt.
-- Sinh thumbnail.
-- Phân tích keyword.
-- Sinh metadata SEO.
-- Đánh giá SEO.
-- Phân tích hiệu suất.
-- Sinh báo cáo tuần.
-- Đề xuất kế hoạch tuần tiếp theo.
-
-### B. Workflow Module
-
-Hệ thống quản lý quy trình nhưng con người thực hiện:
-
-- Duyệt video.
-- Yêu cầu Editor chỉnh sửa.
-- Duyệt thumbnail.
-- Lập lịch đăng.
-- Xác nhận video đã đăng.
-
-### C. External Integration
-
-Tích hợp dịch vụ bên ngoài:
-
-- YouTube.
-- AI Provider.
-- Google Trends.
-- Nguồn dữ liệu thị trường.
-- Các dịch vụ phân tích SEO nếu cần.
+- Nghiên cứu thị trường, tạo/chỉnh ảnh hoặc video, SEO và thao tác xuất bản do người
+  dùng thực hiện bằng công cụ phù hợp.
+- Hub có thể mở công cụ theo ngữ cảnh và nhận tài nguyên/hồ sơ do người dùng lựa chọn.
+- Tích hợp trực tiếp dịch vụ ngoài chỉ được bổ sung ở giai đoạn sau với tiêu chí riêng.
 
 ---
 
-# 5. Lưu ý về hoạt động kênh ban đầu
+# 5. Hoạt động kênh ban đầu — backlog ngoài phạm vi MVP
 
-Hệ thống **không nên tự động tạo view, like, comment nhằm thao túng chỉ số hoặc giả lập người dùng thật**.
-
-Phân hệ này nên được xây dựng theo hướng:
-
-- Tìm nội dung đúng chủ đề.
-- Gợi ý video nên nghiên cứu.
-- Gợi ý nội dung phản hồi.
-- Lập kế hoạch tương tác.
-- Ghi nhận lịch sử hoạt động.
-- Người dùng duyệt và thực hiện thao tác tương tác.
-
-Tên đề xuất:
-
-> **Module hỗ trợ hoạt động kênh và nghiên cứu cộng đồng**
+Các chức năng gợi ý nội dung cộng đồng, lên kế hoạch tương tác và ghi nhận hoạt động
+kênh được giữ lại như ý tưởng từ bản 1.0. Không chức năng nào trong nhóm này là điều
+kiện nghiệm thu của MVP hiện hành.
 
 ---
 
@@ -1654,111 +1668,52 @@ Sau khi triển khai cần đo:
 
 ---
 
-# 23. Phạm vi MVP đề xuất
+# 23. Phạm vi triển khai và nghiệm thu
 
-## MVP 1
+Phạm vi chính thức của MVP được quy định tại mục **Phạm vi hiện hành (v2.0)** ở đầu
+tài liệu. Không dùng danh sách ý tưởng trong bản đặc tả 1.0 để khẳng định chức năng đã
+được triển khai.
 
-Nên triển khai:
+Trước khi nghiệm thu, cần chứng minh tối thiểu các tình huống sau:
 
-- Login.
-- User / Role.
-- Channel Management.
-- Content Project.
-- Kanban Pipeline.
-- Thumbnail Version.
-- Video QC.
-- Tracklist.
-- SEO Metadata.
-- Publish Calendar.
+1. Quản lý dữ liệu ở ít nhất ba kênh thử nghiệm, có album và nhiều video/mix; không lẫn
+   tài nguyên hoặc trạng thái giữa các dự án.
+2. Thử chuyển bước khi thiếu điều kiện và xác nhận hệ thống từ chối mà không cập nhật
+   dở dang.
+3. Duyệt một video thành phẩm, thay file sau duyệt và xác nhận cần QC lại.
+4. Chạy render ngắn thành công; ghi nhận ít nhất một trường hợp lỗi nguồn, thử lại và
+   phục hồi sau khi đóng/mở ứng dụng.
+5. Đối chiếu hồ sơ xuất/backup với dữ liệu demo và ghi lại phiên bản phần mềm, dữ liệu
+   đầu vào, log, kết quả và giới hạn thử nghiệm.
 
----
+Các số đo hiệu quả tập trung vào thời gian tìm trạng thái/nguồn, số lần chuyển công cụ,
+lỗi gắn nhầm tài nguyên và khả năng truy nguyên job. Thời gian thao tác người dùng được
+tách riêng khỏi thời gian máy render. Không dùng lượt xem hoặc doanh thu để quy kết tác
+động nhân quả của hệ thống.
 
-## MVP 2
+# 24. Hướng mở rộng sau bảo vệ
 
-Bổ sung:
+Các hạng mục sau là hướng phát triển, không thuộc tiêu chí nghiệm thu MVP:
 
-- Competitor Database.
-- Market Research.
-- Keyword Research.
-- Thumbnail AI.
-- SEO AI.
+- Nhiều người dùng, xác thực và phân quyền theo vai trò/kênh.
+- YouTube API để đồng bộ metadata, lịch đăng hoặc analytics sau khi xác thực nhu cầu và
+  quyền truy cập.
+- Báo cáo tổng hợp theo kênh từ snapshot có nguồn gốc rõ ràng.
+- Adapter cho công cụ nghiên cứu, tạo nội dung hoặc nhà cung cấp khác.
+- Tự động hóa bàn giao hai chiều bằng `project_id` và hợp đồng dữ liệu ổn định.
+- Phân tích/đề xuất bằng AI nếu có tập dữ liệu, cách đánh giá và tiêu chí chất lượng riêng.
 
----
-
-## MVP 3
-
-Bổ sung:
-
-- YouTube Integration.
-- Analytics Snapshot.
-- Performance Evaluation.
-- Weekly Report.
-
----
-
-## MVP 4
-
-Bổ sung:
-
-- Trend Detection.
-- AI Recommendation.
-- Experiment Tracking.
-- Knowledge Base.
-- Next Week Strategy.
-
----
-
-# 24. Use Case trọng tâm của khóa luận
-
-Trong phạm vi nghiên cứu, năm Use Case nên được xem là trọng tâm:
-
-1. **UC10 – Phân tích xu hướng thị trường.**
-2. **UC14 – Sinh thumbnail bằng AI.**
-3. **UC22/UC23 – Sinh và đánh giá SEO metadata.**
-4. **UC29 – Phân tích hiệu suất video.**
-5. **UC31 – Đề xuất kế hoạch tuần tiếp theo.**
-
-Chuỗi giá trị:
-
-```text
-UNDERSTAND MARKET
-      ↓
-CREATE
-      ↓
-OPTIMIZE
-      ↓
-MEASURE
-      ↓
-LEARN
-```
-
----
+Mở rộng từng phần qua adapter và migration có phiên bản; không cần chuyển sang
+microservices hoặc xây framework plugin trước khi có nhu cầu thực tế.
 
 # 25. Kết luận
 
-Hệ thống không chỉ đóng vai trò là phần mềm quản lý công việc mà được định hướng trở thành một nền tảng hỗ trợ ra quyết định cho hoạt động vận hành nhiều kênh YouTube.
+Đóng góp của khóa luận là một hệ thống quản trị quy trình sản xuất nội dung đa kênh với
+mô hình dữ liệu phân cấp kênh → album → video/mix, các điều kiện chuyển bước, truy vết
+tài nguyên/phiên bản, kiểm duyệt gắn với bản thành phẩm, điều phối render job và phục
+hồi sau lỗi. Các dịch vụ nghiên cứu, tạo nội dung và xuất bản được xem là công cụ ngoài;
+Hub tập trung vào tính nhất quán, khả năng quan sát và truy nguyên của quy trình.
 
-Giá trị cốt lõi của hệ thống nằm ở việc liên kết:
-
-```text
-Market Intelligence
-        +
-Production Workflow
-        +
-AI Assistance
-        +
-Historical Performance
-        ↓
-Continuous Optimization
-```
-
-Khi dữ liệu được tích lũy đủ lớn, hệ thống có thể dần hình thành Knowledge Base nội bộ, giúp đội ngũ xác định được:
-
-- Chủ đề nào đang tăng trưởng.
-- Thumbnail nào thường có hiệu quả cao.
-- Loại title nào phù hợp từng niche.
-- Khung giờ nào hiệu quả.
-- Format video nào có performance tốt.
-- Chiến lược nội dung nào nên thử ở chu kỳ tiếp theo.
-
-Đây là nền tảng để phát triển từ một hệ thống quản trị quy trình thành một **YouTube Content Intelligence System** hoàn chỉnh.
+Khả năng mở rộng được giữ ở ranh giới adapter, định danh dữ liệu và migration schema.
+Những chức năng như RBAC, đồng bộ YouTube API và phân tích AI có thể bổ sung sau khi có
+nhu cầu và tiêu chí đánh giá độc lập.

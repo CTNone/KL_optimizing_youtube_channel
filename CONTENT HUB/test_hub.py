@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from store import Store, DomainError, CHECKS, fingerprint, TZ
 from services import Adapters, RenderWorker, InstanceLock, find_workspace
+from demo import seed
 
 class DomainTests(unittest.TestCase):
     def setUp(self):
@@ -164,6 +165,24 @@ class DomainTests(unittest.TestCase):
                 InstanceLock(path)
         finally:
             lock.close()
+
+
+class DemoSeedTests(unittest.TestCase):
+    def test_demo_seed_has_multichannel_hierarchy_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory(prefix="hub demo ") as temporary:
+            root = Path(temporary)
+            store = Store(root / "demo.sqlite3")
+            seed(store, root)
+            seed(store, root)
+
+            channels = store.channels()
+            albums = [album for channel in channels for album in store.albums(channel["id"])]
+            projects = store.projects()
+            self.assertEqual(len(channels), 3)
+            self.assertEqual(len(albums), 6)
+            self.assertEqual(len(projects), 12)
+            self.assertEqual(sum(album["video_count"] for album in albums), 12)
+            self.assertTrue((root / "OUTPUT TỔNG" / "Content Hub" / "Demo Assets" / "demo_thumbnail.png").is_file())
 
 
 class RenderIntegrationTests(unittest.TestCase):

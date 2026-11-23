@@ -1,8 +1,8 @@
 {
   "testedOn": "2026-10-07",
   "realGoogleFlow": true,
-  "record": "C:\\Users\\CTN_Number_ONE\\Documents\\TOOL Video Flow OUTPUT\\Video\\2026-10-07\\13-00-20_ce8ac028\\video.json",
-  "inputImage": "C:\\Users\\CTN_Number_ONE\\Documents\\TOOL Video Flow OUTPUT\\Video\\2026-10-07\\13-00-20_ce8ac028\\input.jpg",
+  "record": "C:\\Users\\CTN_Number_ONE\\Documents\\KHÓA LUẬN CỦA TÔI\\OUTPUT TỔNG\\Video\\2026-10-07\\13-00-20_ce8ac028\\video.json",
+  "inputImage": "C:\\Users\\CTN_Number_ONE\\Documents\\KHÓA LUẬN CỦA TÔI\\OUTPUT TỔNG\\Video\\2026-10-07\\13-00-20_ce8ac028\\input.jpg",
   "prompt": "tuyết rơi.",
   "model": "Veo 3.1 - Lite",
   "resolutionSelected": "1080p",
@@ -12,7 +12,7 @@
   "composerRestored": true,
   "files": [
     {
-      "file": "C:\\Users\\CTN_Number_ONE\\Documents\\TOOL Video Flow OUTPUT\\Video\\2026-10-07\\13-00-20_ce8ac028\\01_debc4d362505.mp4",
+      "file": "C:\\Users\\CTN_Number_ONE\\Documents\\KHÓA LUẬN CỦA TÔI\\OUTPUT TỔNG\\Video\\2026-10-07\\13-00-20_ce8ac028\\01_debc4d362505.mp4",
       "bytes": 23310045,
       "sha256": "d43718c8bc78543ecf30171987cc01b92cfb4a4d0174fc7540e568551d6d5b9d",
       "durationSeconds": 8.0,

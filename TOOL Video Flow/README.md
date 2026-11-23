@@ -1,10 +1,16 @@
 # YouTube Music Studio
 
+> **Legacy standalone UI.** The primary workflow is Content Hub for channel, album and
+> video/mix management, with Google Flow's official website for generation. Hub no
+> longer opens this duplicate thumbnail/video creation form. Existing source and run
+> artifacts remain available for reference; use the standalone launcher only when
+> intentionally testing the older automation.
+
 Mở shortcut **NCTT + Thumbnail** trên Desktop. Shortcut đã chuyển sang `Start-Studio.ps1` của TOOL Video Flow.
 
 - NCTT và Thumbnail dùng lại logic của hai thư mục TOOL NCTT và TOOL THUMBNAIL; giữ hai thư mục này cạnh TOOL Video Flow.
 - Lịch sử có bộ lọc NCTT / Thumbnail / Video, gom ngày và giờ từng lượt, hiển thị chi tiết và mở thư mục kết quả. Tự làm mới mỗi 5 giây.
-- NCTT mới: `TOOL Video Flow OUTPUT/NCTT/YYYY-MM-DD/HH-MM-SS_id`. Thumbnail mới: `TOOL Video Flow OUTPUT/Thumbnail/YYYY-MM-DD/HH-MM-SS_id`. Video mới: `TOOL Video Flow OUTPUT/Video/YYYY-MM-DD/HH-MM-SS_id`.
+- NCTT mới: `OUTPUT TỔNG/NCTT/YYYY-MM-DD/HH-MM-SS_id`. Thumbnail mới: `OUTPUT TỔNG/Thumbnail/YYYY-MM-DD/HH-MM-SS_id`. Video mới: `OUTPUT TỔNG/Video/YYYY-MM-DD/HH-MM-SS_id`.
 - Dữ liệu cũ giữ nguyên vị trí. Lịch sử Thumbnail đọc state.json của từng hồ sơ trong TOOL THUMBNAIL, NCTT cũ đọc thư mục exports. Lượt NCTT không có báo cáo được ghi là chưa có báo cáo, không suy đoán thành công.
 - Video có tạo tự động từ một ảnh + prompt, xác nhận cài đặt, chờ kết quả và chọn độ phân giải tải cao nhất khả dụng. Có thể lưu bản chuẩn bị riêng; bản chuẩn bị không được ghi là video đã tạo.
 
@@ -16,7 +22,7 @@ Kiểm tra: biên dịch Python, dựng giao diện bốn tab, thư mục từng
 
 Bộ điều khiển Video dùng lại kết nối Chrome, F5/chờ, upload ảnh và xác nhận ảnh đính kèm của Thumbnail. Cài đặt phải được xác nhận trước khi gửi. Sau một lần gửi, chờ đủ video mới có thể phát và ổn định 8 giây, tối đa 20 phút. Menu tải được đọc để chọn mức cao nhất khả dụng theo số pixel (ví dụ 4K > 1080p > 720p); không cố định một mức. Chờ download/upscale tối đa 15 phút. Không tự gửi lại khi không rõ kết quả. Dừng chỉ dừng thao tác tool; tác vụ Google đã nhận có thể tiếp tục tạo.
 
-Kết quả và video.json nằm dưới `TOOL Video Flow OUTPUT/Video/ngày/giờ_id`, kèm ảnh đầu vào, prompt, cài đặt, trạng thái, mức tải và đường dẫn file đã lưu. File tải một phần được giữ nếu video tiếp theo gặp lỗi.
+Kết quả và video.json nằm dưới `OUTPUT TỔNG/Video/ngày/giờ_id`, kèm ảnh đầu vào, prompt, cài đặt, trạng thái, mức tải và đường dẫn file đã lưu. File tải một phần được giữ nếu video tiếp theo gặp lỗi.
 
 Đã kiểm thử cài đặt bằng Chrome thật trên trang giả lập cục bộ, thứ tự độ phân giải, không gửi lại khi chưa xác nhận, biên dịch và giao diện. Chưa kiểm chứng trọn luồng trên Flow đăng nhập thật: nếu Flow đổi nút, hiển thị video qua preview khác hoặc menu tải khác, tool sẽ báo lỗi và cần cập nhật nhận diện. Chưa dùng credit của người dùng để tạo video thử.
 
@@ -24,7 +30,7 @@ Tab Video có thanh cuộn toàn trang (kéo thanh bên phải hoặc lăn chu�
 
 Quét hồ sơ Chrome tự động khi mở ứng dụng, có Quét lại / Kết nối Chrome đang mở / Nhập phiên / Mở Flow bằng hồ sơ Desktop ngay trong tab Video. Video và Thumbnail dùng chung lựa chọn và bộ kết nối. Phiên đã đăng nhập được dùng lại khi còn hiệu lực; Google yêu cầu đăng nhập hoặc Allow thì người dùng thực hiện trong Chrome. Kiểm tra máy hiện tại tìm được 3 hồ sơ Chrome.
 
-Mục Vị trí lưu video sau khi tải ở tab Video cho phép chọn thư mục bên trong `TOOL Video Flow OUTPUT` và nhớ lựa chọn qua video-settings.json. Mặc định là `TOOL Video Flow OUTPUT/Video/ngày/giờ_id`. video-runs.json giữ danh sách lượt để lịch sử đọc được các kết quả đã lưu.
+Mục Vị trí lưu video sau khi tải ở tab Video cho phép chọn thư mục bên trong `OUTPUT TỔNG` và nhớ lựa chọn qua video-settings.json. Mặc định là `OUTPUT TỔNG/Video/ngày/giờ_id`. video-runs.json giữ danh sách lượt để lịch sử đọc được các kết quả đã lưu.
 
 Menu mô hình được chờ sau khi mở, nhận diện tên Veo tách khỏi mô tả/credit, hỗ trợ dấu -, – và —, dòng lựa chọn dạng div như logic Thumbnail. Kiểm thử Chrome giả lập bao gồm menu xuất hiện chậm, dòng mô hình có mô tả và xác nhận tên sau chọn.
 

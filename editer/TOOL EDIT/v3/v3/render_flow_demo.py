@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("--seconds", type=int, default=3600)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[4]
-    output_root = root / "TOOL Video Flow OUTPUT"
+    output_root = root / "OUTPUT TỔNG"
     source = args.source or sorted((output_root / "Video").rglob("*.mp4"))[-1]
     folder = output_root / "Editor" / "demo_flow"
     folder.mkdir(parents=True, exist_ok=True)

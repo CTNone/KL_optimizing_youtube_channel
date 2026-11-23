@@ -1,7 +1,7 @@
 from pathlib import Path
 import openpyxl, json, re, csv
 ROOT=Path(__file__).resolve().parent
-OUTPUT_ROOT=ROOT.parents[1]/'TOOL Video Flow OUTPUT'/'Music Library'
+OUTPUT_ROOT=ROOT.parents[1]/'OUTPUT TỔNG'/'Music Library'
 OUTPUT_ROOT.mkdir(parents=True,exist_ok=True)
 TRACKS_ROOT=OUTPUT_ROOT/'Tracks'
 NAMES=['Chrismas','Winter_Cozy','Cafe_Jazz','Study_Reading','Deep_Relax','Romantic_Dinner']

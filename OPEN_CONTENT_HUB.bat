@@ -1,5 +1,6 @@
 @echo off
-cd /d "%~dp0CONTENT HUB"
-rem Run the current source so the launcher cannot silently open an older packaged build.
+setlocal
+set "HUB_DIR=%~dp0CONTENT HUB"
+cd /d "%HUB_DIR%"
 py app.py
 if errorlevel 1 pause

@@ -31,6 +31,7 @@
 *.sqlite3
 *.db
 *.log
+OUTPUT TỔNG/
 TOOL Video Flow OUTPUT/
 editer/TOOL EDIT/v3/v3/demo_flow/
 TOOL THUMBNAIL/Thử nghiệm trước đó - failed/
@@ -47,3 +48,5 @@ editer/Nhạc jazz/library_completion_report.csv
 
 # Generated research exports
 **/exports/
+.opencode
+.specify

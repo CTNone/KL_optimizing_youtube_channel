@@ -1,5 +1,10 @@
 # Flow TXT Runner
 
+> **Legacy batch utility.** Content Hub now opens the official Flow website and
+> prepares a per-video handoff; Google Flow Agent handles interactive generation.
+> This runner is retained for the specific case of sequential, unrelated TXT prompts
+> and is not part of the default workflow.
+
 **Muốn dùng Chrome đang đăng nhập:** xem [hướng dẫn tiện ích Chrome](chrome-extension/README.md). Tiện ích chạy ngay trong tab Flow hiện có; không cần mở trình duyệt riêng. Bản Python dưới đây vẫn giữ để dùng tùy chọn.
 
 Ứng dụng Windows/Python đọc prompt UTF-8 từ TXT và thao tác Google Flow qua trình duyệt. Không cần Gemini API key. Việc tạo ảnh vẫn sử dụng quota/credit Flow của tài khoản, không tạo thêm lượt miễn phí.

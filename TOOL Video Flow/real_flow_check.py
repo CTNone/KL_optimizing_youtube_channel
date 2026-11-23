@@ -47,7 +47,7 @@ async def main():
 
     if '--retry-before-submit' not in sys.argv:
      raise ValueError('Previous test stopped before submit. Explicit --retry-before-submit required.')
-  source=ROOT.parent/'TOOL Video Flow OUTPUT/Video/2026-10-07/12-38-14_2c9e31c6/video.json'
+  source=ROOT.parent/'OUTPUT TỔNG/Video/2026-10-07/12-38-14_2c9e31c6/video.json'
   row=json.loads(source.read_text(encoding='utf-8'))
   settings=json.loads((ROOT/'video-settings.json').read_text(encoding='utf-8'))
   folder=dated_output(settings['output'],'Video')

@@ -11,7 +11,7 @@ from desktop_flow import DesktopFlow
 from chrome_profile import discover_profiles
 
 ROOT = Path(__file__).resolve().parent
-OUTPUT_ROOT = ROOT.parent / 'TOOL Video Flow OUTPUT' / 'Thumbnail'
+OUTPUT_ROOT = ROOT.parent / 'OUTPUT TỔNG' / 'Thumbnail'
 NCTT = ROOT.parent / 'TOOL NCTT'
 QUEUE = ROOT / 'chrome-extension' / 'native-host' / 'nctt-job.json'
 

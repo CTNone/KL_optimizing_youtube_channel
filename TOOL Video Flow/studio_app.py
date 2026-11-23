@@ -15,7 +15,7 @@ from history_view import HistoryView, dated_output, register_video_folder
 from chrome_profile import discover_profiles
 
 ROOT = Path(__file__).resolve().parent
-OUTPUT_ROOT = ROOT.parent / 'TOOL Video Flow OUTPUT'
+OUTPUT_ROOT = ROOT.parent / 'OUTPUT TỔNG'
 OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
 NCTT = ROOT.parent / 'TOOL NCTT'
 QUEUE = ROOT / 'chrome-extension' / 'native-host' / 'nctt-job.json'

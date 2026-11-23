@@ -20,11 +20,12 @@ def find_workspace():
 class Adapters:
     def __init__(self, store: Store, workspace: Path):
         self.store, self.workspace = store, Path(workspace).resolve()
-        self.output_root = self.workspace / "TOOL Video Flow OUTPUT" / "Content Hub"
+        self.output_root = self.workspace / "OUTPUT TỔNG" / "Content Hub"
         self.editor_dir = self.workspace / "editer" / "TOOL EDIT" / "v3" / "v3"
 
     def status(self):
-        return {"Video Flow": (self.workspace / "TOOL Video Flow" / "launcher.py").is_file(),
+        return {"NCTT": (self.workspace / "TOOL NCTT" / "app.py").is_file(),
+                "Music Manager": (self.workspace / "editer" / "Nhạc jazz" / "Music_Manager" / "app.py").is_file(),
                 "Tool Edit": (self.editor_dir / "flow_loop.py").is_file(),
                 "FFmpeg": (self.editor_dir / "tools" / "ffmpeg.exe").is_file(),
                 "FFprobe": (self.editor_dir / "tools" / "ffprobe.exe").is_file()}
@@ -42,21 +43,31 @@ class Adapters:
     def prepare_handoff(self, project_id, actor):
         project = self.store.project(project_id)
         assets = self.store.assets(project_id, latest=True)
+        channel_assets = self.store.channel_assets(project["channel_id"])
+        channel_latest = {}
+        for asset in channel_assets:
+            key = (asset["kind"], asset["slot"])
+            if key not in channel_latest or asset["version"] > channel_latest[key]["version"]:
+                channel_latest[key] = asset
+        assets.extend(channel_latest.values())
         folder = self.output_root / "Projects" / project_id
         folder.mkdir(parents=True, exist_ok=True)
-        bundle = {"schema_version": 1, "project": project, "assets": assets,
-                  "instructions": "Chọn đúng input/prompt trong Studio; kết quả cần nhập lại và gắn đúng dự án."}
+        bundle = {"schema_version": 2, "project": project, "assets": assets,
+                  "instructions": "Mỗi dự án là một video/mix trong album (nếu có). Dùng Google Flow Agent trên website; nhập kết quả về đúng video/mix."}
         (folder / "handoff.json").write_text(json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8")
         (folder / "brief.txt").write_text(
-            f"Kênh: {project['channel_name']}\nVideo: {project['title']}\n"
-            f"Phong cách: {project['channel_style']}\n\n{project['brief']}\n", encoding="utf-8")
+            f"Kênh: {project['channel_name']}\nAlbum/playlist: {project.get('album_name') or 'Chưa gắn'}\n"
+            f"Playlist nhạc: {project.get('music_project_name') or 'Theo thư viện kênh'}\n"
+            f"Video/mix: {project['title']}\nPhong cách: {project['channel_style']}\n\n"
+            f"Brief album:\n{project.get('album_brief') or '(không có)'}\n\n"
+            f"Brief video/mix:\n{project['brief']}\n", encoding="utf-8")
         if str(self.editor_dir) not in sys.path:
             sys.path.insert(0, str(self.editor_dir))
         from engine import RenderSettings
         from flow_loop import make_prompt
         clips = [a["path"] for a in assets if a["kind"] == "clip"]
         images = [a["path"] for a in assets if a["kind"] in ("thumbnail", "reference")]
-        channel_music = self.store.channel_music(project["channel_id"])
+        channel_music = self.store.project_music(project_id)
         settings = RenderSettings(visual_source="Flow Loop", flow_clips=clips,
                                   flow_music_enabled=len(channel_music) >= 5,
                                   channel_profile=project["channel_name"], filter_channel_music=True,
@@ -66,7 +77,14 @@ class Adapters:
             {"schema_version": 1, "settings": settings.to_json_dict(), "image": images[0] if images else "",
              "music_folder": str(self.workspace / "editer" / "Nhạc jazz"),
              "output": str(output), "first_five": []}, ensure_ascii=False, indent=2), encoding="utf-8")
-        (folder / "flow_prompt.txt").write_text(make_prompt("Custom", "Subtle", project["channel_style"]+". "+project["brief"]), encoding="utf-8")
+        flow_brief = " ".join(
+            text for value in (project.get("album_brief"), project.get("brief"))
+            if (text := str(value or "").strip())
+        )
+        channel_style = str(project.get("channel_style") or "").strip()
+        prompt_context = ". ".join(part for part in (channel_style, flow_brief) if part)
+        (folder / "flow_prompt.txt").write_text(
+            make_prompt("Custom", "Subtle", prompt_context), encoding="utf-8")
         with self.store.transaction() as db:
             self.store.event(db, project_id, actor, "handoff_prepared", {"folder": str(folder)})
         return folder
@@ -74,7 +92,10 @@ class Adapters:
     def launch(self, tool, project_id, actor):
         folder = self.prepare_handoff(project_id, actor)
         if tool == "studio":
-            entry = self.workspace / "TOOL Video Flow" / "launcher.py"
+            entry = self.workspace / "TOOL NCTT" / "app.py"
+            command = self.python_command() + [str(entry), "--research-only"]
+        elif tool == "music":
+            entry = self.workspace / "editer" / "Nhạc jazz" / "Music_Manager" / "app.py"
             command = self.python_command() + [str(entry)]
         elif tool == "editor":
             entry = self.editor_dir / "dist" / "ToolEdit" / "ToolEdit.exe"
@@ -94,6 +115,10 @@ class Adapters:
                     "CONTENT_HUB_CHANNEL_NAME": project["channel_name"],
                     "CONTENT_HUB_PROJECT_ID": project_id,
                     "CONTENT_HUB_HANDOFF": str(folder / "handoff.json")})
+        if project.get("album_id"):
+            env["CONTENT_HUB_ALBUM_ID"] = project["album_id"]
+        if project.get("music_project_id") is not None:
+            env["CONTENT_HUB_MUSIC_PROJECT_ID"] = str(project["music_project_id"])
         log = (folder / "tool-launch.log").open("a", encoding="utf-8")
         try:
             process = subprocess.Popen(command, cwd=entry.parent, stdout=log, stderr=log,
@@ -118,7 +143,7 @@ class Adapters:
         if music_enabled:
             project = self.store.project(project_id)
             assigned_music = []
-            for track in self.store.channel_music(project["channel_id"]):
+            for track in self.store.project_music(project_id):
                 info = fingerprint(Path(track["path"]))
                 assigned_music.append({"id": track["id"], "kind": "music", "path": info["path"],
                                        "sha256": info["sha256"], "bytes": info["bytes"],
